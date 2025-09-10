@@ -1,7 +1,8 @@
 import { Stack } from "expo-router";
-import { Alert, StyleSheet, Text, View } from "react-native";
+import { Alert, Text, View } from "react-native";
 import MapView, { MapPressEvent, Marker } from "react-native-maps";
 import { useState } from "react";
+import { styles } from "./styles";
 
 type Pin = {
   id: number;
@@ -94,14 +95,4 @@ export default function Page() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: { flex: 1, paddingTop: 20 },
-  title: {
-    fontSize: 20,
-    textAlign: "center",
-    justifyContent: "center",
-    marginBottom: 10,
-  },
-  description: { fontSize: 14, textAlign: "center", marginBottom: 16 },
-  map: { flex: 1 },
-});
+
