@@ -27,11 +27,11 @@ GET {{baseUrl}}/pins
 Content-Type: {{contentType}}
 
 ###
-GET {{baseUrl}}/pins/20
+GET {{baseUrl}}/pins/21
 Content-Type: {{contentType}}
 
 ###
-PATCH {{baseUrl}}/pins/22
+PATCH {{baseUrl}}/pins/21
 Content-Type: {{contentType}}
 
 {

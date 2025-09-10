@@ -1,8 +1,8 @@
 {
-  "name": "teste-crud-node-typescript",
+  "name": "back-end-mapa-de-acessibilidade",
   "version": "1.0.0",
-  "description": "Teste de aplicação CRUD utilizando Node.js e TypeScript",
-  "main": "dist/index.js",
+  "description": "Backend API for Mapa de Acessibilidade application",
+  "main": "dist/server.js",
   "scripts": {
     "start": "tsx src/server.ts",
     "start:dev": "tsx --watch src/server.ts",
