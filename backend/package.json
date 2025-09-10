@@ -1,0 +1,52 @@
+{
+  "name": "teste-crud-node-typescript",
+  "version": "1.0.0",
+  "description": "Teste de aplicação CRUD utilizando Node.js e TypeScript",
+  "main": "dist/index.js",
+  "scripts": {
+    "start": "tsx src/server.ts",
+    "start:dev": "tsx --watch src/server.ts",
+
+    "build": "rimraf dist && tsup src/server.ts --format cjs,esm --dts --minify",
+
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "tsx src/db/migrate.ts",
+    "db:seed": "tsx src/db/seed.ts",
+    "db:studio": "drizzle-kit studio"
+},
+  "keywords": [
+    "nodejs",
+    "typescript",
+    "crud",
+    "express",
+    "drizzle-orm",
+    "postgresql",
+    "api"
+  ],
+  "author": "Gabriel Rodrigues",
+  "license": "ISC",
+  "dependencies": {
+    "@types/pg": "^8.15.5",
+    "compression": "^1.8.1",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.2",
+    "drizzle-orm": "^0.44.5",
+    "express": "^5.1.0",
+    "helmet": "^8.1.0",
+    "pg": "^8.16.3",
+    "rimraf": "^6.0.1"
+  },
+  "devDependencies": {
+    "@faker-js/faker": "^10.0.0",
+    "@types/compression": "^1.8.1",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.3",
+    "@types/node": "^24.3.1",
+    "drizzle-kit": "^0.31.4",
+    "pino": "^9.9.4",
+    "pino-http": "^10.5.0",
+    "tsup": "^8.5.0",
+    "tsx": "^4.20.5",
+    "typescript": "^5.9.2"
+  }
+}

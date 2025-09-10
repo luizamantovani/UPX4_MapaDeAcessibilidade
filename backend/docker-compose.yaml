@@ -1,0 +1,14 @@
+services:
+  postgres:
+    image: postgis/postgis:16-3.5
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 1234
+      POSTGRES_DB: upx4_db
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+volumes:
+  pgdata:

@@ -1,0 +1,47 @@
+@host = http://localhost:8080
+@baseUrl = {{host}}/api/v1
+@contentType = application/json
+
+###
+GET {{host}}
+Content-Type: {{contentType}}
+
+###
+GET {{host}}/healthcheck
+Content-Type: {{contentType}}
+
+###
+POST {{baseUrl}}/pins
+Content-Type: {{contentType}}
+
+{
+  "title": "Praça Central",
+  "description": "Possui rampas e banheiros adaptados",
+  "category": "Acessibilidade",
+  "latitude": -23.5012,
+  "longitude": -47.4523
+}
+
+###
+GET {{baseUrl}}/pins
+Content-Type: {{contentType}}
+
+###
+GET {{baseUrl}}/pins/20
+Content-Type: {{contentType}}
+
+###
+PATCH {{baseUrl}}/pins/22
+Content-Type: {{contentType}}
+
+{
+  "title": "Meu Pin Editado",
+  "description": "Descrição do pin editada",
+  "category": "Categoria Editada",
+  "longitude": -46.6340,
+  "latitude": -23.5510
+}
+
+###
+DELETE {{baseUrl}}/pins/21
+Content-Type: {{contentType}}
