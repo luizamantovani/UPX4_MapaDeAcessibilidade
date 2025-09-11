@@ -15,11 +15,35 @@ POST {{baseUrl}}/pins
 Content-Type: {{contentType}}
 
 {
-  "title": "Praça Central",
-  "description": "Possui rampas e banheiros adaptados",
-  "category": "Acessibilidade",
-  "latitude": -23.5012,
-  "longitude": -47.4523
+  "title": "Biblioteca Municipal",
+  "description": "Entrada com elevador e piso tátil",
+  "category": "Nao Acessivel",
+  "latitude": -23.5025,
+  "longitude": -47.4531
+}
+
+###
+POST {{baseUrl}}/pins
+Content-Type: {{contentType}}
+
+{
+  "title": "Restaurante Popular",
+  "description": "Banheiro adaptado e acesso para cadeirantes",
+  "category": "Acessivel",
+  "latitude": -23.5038,
+  "longitude": -47.4542
+}
+
+###
+POST {{baseUrl}}/pins
+Content-Type: {{contentType}}
+
+{
+  "title": "Estação de Ônibus",
+  "description": "Plataforma com rampas e sinalização em braile",
+  "category": "Parcialmente Acessivel",
+  "latitude": -23.5049,
+  "longitude": -47.4553
 }
 
 ###
@@ -27,7 +51,7 @@ GET {{baseUrl}}/pins
 Content-Type: {{contentType}}
 
 ###
-GET {{baseUrl}}/pins/21
+GET {{baseUrl}}/pins/22
 Content-Type: {{contentType}}
 
 ###

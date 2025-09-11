@@ -29,6 +29,7 @@ DATABASE_URL=postgres://usuario:senha@localhost:5432/nome_do_banco
 - `npm run start` — Inicia a aplicação
 - `npm run start:dev` — Inicia em modo desenvolvimento
 - `npm run build` — Compila o projeto
+- `npm run db:generate` — Gera a pasta drizzle com o SQL de criação de tabelas
 - `npm run db:migrate` — Executa as migrações
 - `npm run db:seed` — Popula o banco com dados de exemplo
 - `npm run db:studio` — Abre o Drizzle Studio
