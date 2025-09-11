@@ -10,7 +10,7 @@ const db = drizzle(pool, { schema });
 
 const main = async () => {
   const pinsTable = schema.pins;
-  const usersTable = schema.users;
+  // const usersTable = schema.users;
 
   try {
     console.log("Seeding database...");

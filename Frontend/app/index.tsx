@@ -1,19 +1,35 @@
 import { Stack } from "expo-router";
-import { Alert, Text, View } from "react-native";
+import { Alert, Text, View , Platform } from "react-native";
 import MapView, { MapPressEvent, Marker } from "react-native-maps";
-import { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { styles } from "./styles";
+
+const API_URL =
+  Platform.OS === "android"
+    ? "http://10.0.2.2:8080/api/v1" // Android Emulator
+    : "http://localhost:8080/api/v1"; // iOS Simulator
+
+// se rodar no celular físico, substitui por seu IP local, ex: "http://192.168.0.15:8080/api/v1"
+
 
 type Pin = {
   id: number;
+  title: string;
+  category: string;
   latitude: number;
   longitude: number;
-  title: string;
-  color: string;
 };
 
 export default function Page() {
   const [pins, setPins] = useState<Pin[]>([]);
+
+  useEffect(() => {
+  fetch(`${API_URL}/pins`)
+    .then((response) => response.json())
+    .then((data) => setPins(data))
+    .catch((error) => console.error("Erro ao buscar pins:", error));
+}, []);
+
   const handleMapPress = (event: MapPressEvent) => {
     const { latitude, longitude } = event.nativeEvent.coordinate;
 
@@ -33,11 +49,11 @@ export default function Page() {
                   text: "É acessível",
                   onPress: () => {
                     const novoPin = {
-                      id: Date.now(),
+                      id: Date.now(), // Usando timestamp como ID temporário, idealmente o ID viria do backend(banco de dados)
+                      title: "Ponto Acessível",
+                      category: "Acessivel",
                       latitude,
                       longitude,
-                      title: "Ponto Acessível",
-                      color: "green",
                     };
                     setPins([...pins, novoPin]);
                   },
@@ -46,11 +62,11 @@ export default function Page() {
                   text: "Não é acessível",
                   onPress: () => {
                     const novoPin = {
-                      id: Date.now(),
+                      id: Date.now(),     // Usando timestamp como ID temporário, idealmente o ID viria do backend(banco de dados)
+                      title: "Ponto Não Acessível",
+                      category: "Nao Acessivel",
                       latitude,
                       longitude,
-                      title: "Ponto Não Acessível",
-                      color: "red",
                     };
                     setPins([...pins, novoPin]);
                   },
@@ -63,6 +79,7 @@ export default function Page() {
       ]
     );
   };
+
   return (
     <>
       <Stack.Screen options={{ title: "Mapa de Acessibilidade" }} />
@@ -78,21 +95,27 @@ export default function Page() {
             heading: 0,
             pitch: 0,
           }}
-          onPress={handleMapPress}   
+          onPress={handleMapPress}
         >
-          {pins.map((pin) => (
-            <Marker
-              key={pin.id}
-              coordinate={{ latitude: pin.latitude, longitude: pin.longitude }}
-              title={pin.title}
-              pinColor={pin.color}
-            />
-          ))}
+            {pins.map((pin) => (
+              <Marker
+                key={pin.id}
+                coordinate={{ latitude: pin.latitude, longitude: pin.longitude }}
+                title={pin.title}
+                pinColor={
+                  pin.category === "Acessivel"
+                    ? "green"
+                    : pin.category === "Nao Acessivel"
+                    ? "red"
+                    : pin.category === "Parcialmente Acessivel"
+                    ? "blue"
+                    : "gray"
+                }
+              />
+            ))}
         </MapView>
 
       </View>
     </>
   );
 }
-
-

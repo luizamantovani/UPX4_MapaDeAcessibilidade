@@ -17,13 +17,13 @@ Este projeto contém um backend (Node.js/Express) e um frontend (React Native/Ex
 3. Configure o arquivo `.env` conforme necessário.
 4. Execute as migrações do banco de dados (se necessário):
 	```sh
-	npm run migrate
+	npm run db:migrate
 	```
 5. Inicie o servidor:
 	```sh
-	npm run dev
+	npm run start:dev
 	```
-	O backend estará rodando em `http://localhost:3000` (ou porta definida no `.env`).
+	O backend estará rodando em `http://localhost:8080` (ou porta definida no `.env`).
 
 ---
 
