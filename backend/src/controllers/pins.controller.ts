@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import * as service from "../services/pinsService";
-import { logger as pino} from "../utils/logger";
+import { logger as pino } from "../utils/logger";
+import { pinSchema } from "../schemas/pinSchema";
 
 // Lista todos os pins
 export async function list(_req: Request, res: Response) {
@@ -25,9 +26,17 @@ export async function getById(req: Request, res: Response) {
 
 // Cria um novo pin
 export async function create(req: Request, res: Response) {
-  const { title, description, category, latitude, longitude } = req.body; // Extrai dados do corpo da requisição
+  // Validação dos dados recebidos
+  const result = pinSchema.safeParse(req.body);
+  if (!result.success) {
+    pino.warn({req: {method: req.method, url: req.url}, error: result.error.issues}, "Invalid pin data"); // Loga o erro de validação
+    return res.status(400).json({ error: "Dados inválidos", details: result.error.issues });
+  }
+  pino.debug({req: {method: req.method, url: req.url}, body: req.body}, "Creating pin with data"); // Loga os dados recebidos
 
-  const newPin = await service.create({ title, description, category, latitude, longitude }); // Cria o pin no banco
+  const { title, category, latitude, longitude, description } = result.data;
+
+  const newPin = await service.create({ title, description: description ?? null, category, latitude, longitude }); // Cria o pin no banco
 
   pino.info({req: {method: req.method, url: req.url}, result: newPin}, "Created new pin"); // Loga a operação
   res.status(201).json(newPin);               // Retorna o novo pin criado
@@ -35,11 +44,19 @@ export async function create(req: Request, res: Response) {
 
 // Atualiza um pin existente
 export async function update(req: Request, res: Response) {
+  // Validação dos dados recebidos
+  const result = pinSchema.safeParse(req.body);
+  if (!result.success) {
+    pino.warn({req: {method: req.method, url: req.url}, error: result.error.issues}, "Invalid pin data"); // Loga o erro de validação
+    return res.status(400).json({ error: "Dados inválidos", details: result.error.issues });
+  }
+  pino.debug({req: {method: req.method, url: req.url}, body: req.body}, "Updating pin with data"); // Loga os dados recebidos
+
   const id = Number(req.params.id);           // Extrai o ID da URL
 
-  const { title, description, category, latitude, longitude } = req.body; // Extrai dados do corpo
+  const { title, category, latitude, longitude, description } = result.data;
 
-  const updatedPin = await service.update(id, { title, description, category, latitude, longitude }); // Atualiza o pin
+  const updatedPin = await service.update(id, { title, description: description ?? null, category, latitude, longitude }); // Atualiza o pin
 
   pino.info({req: {method: req.method, url: req.url}, result: updatedPin}, "Updated pin"); // Loga a operação
   if (!updatedPin) {

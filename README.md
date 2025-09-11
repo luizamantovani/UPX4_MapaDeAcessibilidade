@@ -15,11 +15,21 @@ Este projeto contém um backend (Node.js/Express) e um frontend (React Native/Ex
 	npm install
 	```
 3. Configure o arquivo `.env` conforme necessário.
-4. Execute as migrações do banco de dados (se necessário):
+4. Execute o comando para gerar os arquivos do banco de dados:
+	```sh
+	npm run db:generate
+	```
+	Esse comando executa o `drizzle-kit generate`.
+5. Execute as migrações do banco de dados (se necessário):
 	```sh
 	npm run db:migrate
 	```
-5. Inicie o servidor:
+6. Execute o comando para popular o banco de dados com dados de exemplo:
+	```sh
+	npm run db:seed
+	```
+	Esse comando executa o script de seed para inserir dados iniciais no banco.
+7. Inicie o servidor:
 	```sh
 	npm run start:dev
 	```
