@@ -67,14 +67,35 @@ export default function Page() {
     setDetailsModalVisible(true);
   };
 
-  const handleSave = () => {
-    const newPin = {
-      ...formData,
-      id: Date.now(),
-    };
-
-    setPins([...pins, newPin]);
-    setFormModalVisible(false);
+  const handleSave = async () => {
+    if (
+      !formData.title ||
+      !formData.category ||
+      !formData.latitude ||
+      !formData.longitude
+    ) {
+      alert("Preencha todos os campos obrigatórios!");
+      return;
+    }
+    try {
+      const response = await fetch(`${API_URL}/pins`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+      if (!response.ok) {
+        throw new Error("Erro ao salvar pin");
+      }
+      const pinsResponse = await fetch(`${API_URL}/pins`);
+      const pinsData = await pinsResponse.json();
+      setPins(pinsData);
+      setFormModalVisible(false);
+    } catch (error) {
+      console.error(error);
+      alert("Erro ao salvar o ponto. Tente novamente.");
+    }
   };
 
   return (
@@ -206,5 +227,3 @@ export default function Page() {
     </>
   );
 }
-
-
