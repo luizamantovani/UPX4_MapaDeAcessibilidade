@@ -35,7 +35,7 @@ const main = async () => {
       return {
         title: faker.lorem.words(3),
         description: faker.lorem.sentence(),
-        category: faker.helpers.arrayElement(["Acessivel", "Parcialmente Acessivel", "Nao Acessivel"]),
+        category: faker.helpers.arrayElement(["acessivel", "nao_acessivel"]),
         // ORDEM CORRETA: (longitude, latitude)
         location: sql`ST_SetSRID(ST_MakePoint(${lng}, ${lat}), 4326)::geometry`,
       };
