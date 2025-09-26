@@ -11,6 +11,7 @@ import {
 import MapView, { MapPressEvent, Marker } from "react-native-maps";
 import React, { useEffect, useState } from "react";
 import { localStyles, styles } from "./styles";
+import DropDownPicker from 'react-native-dropdown-picker';
 
 const API_URL =
   Platform.OS === "android"
@@ -30,7 +31,12 @@ export default function Page() {
   const [pins, setPins] = useState<Pin[]>([]);
   const [formModalVisible, setFormModalVisible] = useState(false);
   const [detailsModalVisible, setDetailsModalVisible] = useState(false);
-
+  const [items, setItems] = useState([
+    { label: "Acessível", value: "acessivel" },
+    { label: "Não acessível", value: "nao_acessivel" },
+  ]);
+  const [open, setOpen] = useState(false);
+  const [value, setValue] = useState(null);
   const [formData, setFormData] = useState({
     title: "",
     category: "",
@@ -127,12 +133,13 @@ export default function Page() {
               title={pin.title}
               description={pin.description}
               pinColor={
-                pin.category === "Acessivel"
+                pin.category === "acessivel"
                   ? "green"
-                  : pin.category === "Nao Acessivel"
-                  ? "red"
-                  : "gray"
+                  : pin.category === "nao_acessivel"
+                    ? "red"
+                    : "gray"
               }
+
               onPress={() => handleMarkerPress(pin)}
             />
           ))}
@@ -160,14 +167,23 @@ export default function Page() {
                 }
               />
 
-              <TextInput
-                placeholder="Categoria (Acessível / Não Acessível)"
-                style={styles.input}
-                value={formData.category}
-                onChangeText={(text) =>
-                  setFormData({ ...formData, category: text })
-                }
+              <DropDownPicker
+                open={open}
+                value={value}
+                items={items}
+                setOpen={setOpen}
+                setValue={(callback) => {
+                  const selectedValue = callback(value);
+                  setValue(selectedValue);
+                  setFormData((prev) => ({ ...prev, category: selectedValue }));
+                }}
+                setItems={setItems}
+                placeholder="Selecione a Categoria"
+                style={{ borderWidth: 1, borderColor: "#ccc"}}
+                dropDownContainerStyle={{ borderWidth: 1, borderColor: "#ccc"}}
+                containerStyle={{ marginBottom: 20 }}
               />
+
 
               <TextInput
                 placeholder="Descrição"
