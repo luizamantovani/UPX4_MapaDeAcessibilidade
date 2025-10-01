@@ -1,10 +1,6 @@
 import { Pin } from "../types/Pin";
-import { Platform } from "react-native";
 
-const API_URL =
-  Platform.OS === "android"
-    ? "http://10.0.2.2:8080/api/v1"
-    : "http://localhost:8080/api/v1";
+const API_URL = "https://upx4-mapadeacessibilidade.onrender.com/api/v1";
 
 export async function fetchPins(): Promise<Pin[]> {
   const response = await fetch(`${API_URL}/pins`);

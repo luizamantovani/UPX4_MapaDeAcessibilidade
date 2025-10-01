@@ -6,16 +6,36 @@ import PinFormModal from "../src/components/PinFormModal";
 import PinDetailsModal from "../src/components/PinDetailsModal";
 import { Pin } from "../src/types/Pin";
 import { fetchPins } from "../src/services/api";
+import { MapPressEvent } from "react-native-maps";
 
 export default function Page() {
   const [pins, setPins] = useState<Pin[]>([]);
   const [formModalVisible, setFormModalVisible] = useState(false);
   const [detailsModalVisible, setDetailsModalVisible] = useState(false);
   const [selectedPin, setSelectedPin] = useState<Pin | null>(null);
+  const [formData, setFormData] = useState({
+    title: "",
+    category: "",
+    description: "",
+    latitude: 0,
+    longitude: 0,
+  });
 
   useEffect(() => {
     fetchPins().then(setPins).catch(console.error);
   }, []);
+
+  const handleMapPress = (event: MapPressEvent) => {
+    const { latitude, longitude } = event.nativeEvent.coordinate;
+    setFormData({
+      title: "",
+      category: "",
+      description: "",
+      latitude,
+      longitude,
+    });
+    setFormModalVisible(true);
+  };
 
   return (
     <>
@@ -28,7 +48,7 @@ export default function Page() {
 
         <Map
           pins={pins}
-          onMapPress={() => setFormModalVisible(true)}
+          onMapPress={handleMapPress}
           onMarkerPress={setSelectedPin}
         />
 
@@ -39,6 +59,8 @@ export default function Page() {
             setPins(newPins);
             setFormModalVisible(false);
           }}
+          formData={formData}
+          setFormData={setFormData}
         />
 
         <PinDetailsModal

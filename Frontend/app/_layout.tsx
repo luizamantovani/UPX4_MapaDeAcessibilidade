@@ -1,10 +1,9 @@
 import { Stack } from "expo-router";
-
+import { StyleSheet } from "react-native";
 
 export default function RootLayout() {
   return <Stack />;
 }
-import { StyleSheet } from "react-native";
 
 export const styles = StyleSheet.create({
   container: { flex: 1, paddingTop: 20 },

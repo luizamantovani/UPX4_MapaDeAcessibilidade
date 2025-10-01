@@ -9,16 +9,17 @@ type PinFormModalProps = {
   visible: boolean;
   onClose: () => void;
   onSaved: (pins: Pin[]) => void;
+  formData: {
+    title: string;
+    category: string;
+    description: string;
+    latitude: number;
+    longitude: number;
+  };
+  setFormData: React.Dispatch<React.SetStateAction<any>>;
 };
 
-export default function PinFormModal({ visible, onClose, onSaved }: PinFormModalProps) {
-  const [formData, setFormData] = useState({
-    title: "",
-    category: "",
-    description: "",
-    latitude: 0,
-    longitude: 0,
-  });
+export default function PinFormModal({ visible, onClose, onSaved, formData, setFormData }: PinFormModalProps) {
 
   const [items] = useState([
     { label: "Acessível", value: "acessivel" },
@@ -63,7 +64,7 @@ export default function PinFormModal({ visible, onClose, onSaved }: PinFormModal
             setValue={(callback) => {
               const selectedValue = callback(value);
               setValue(selectedValue);
-              setFormData((prev) => ({ ...prev, category: selectedValue || "" }));
+              setFormData({ ...formData, category: selectedValue || "" });
             }}
             placeholder="Selecione a Categoria"
             style={{ borderWidth: 1, borderColor: "#ccc", marginBottom: 20 }}
