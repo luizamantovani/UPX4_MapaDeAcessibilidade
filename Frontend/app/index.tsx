@@ -1,13 +1,20 @@
 import { Stack } from "expo-router";
 import React, { useEffect, useState } from "react";
-import { View, Text } from "react-native";
+import { View, Text, Button } from "react-native";
 import Map from "../src/components/Map";
 import PinFormModal from "../src/components/PinFormModal";
 import PinDetailsModal from "../src/components/PinDetailsModal";
 import { Pin } from "../src/types/Pin";
 import { fetchPins } from "../src/services/api";
-
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useRouter } from "expo-router";
 export default function Page() {
+  const router = useRouter();
+
+const handleLogout = async () => {
+  await AsyncStorage.removeItem("user");
+  router.replace("/register"); // volta para a tela de cadastro
+};
   const [pins, setPins] = useState<Pin[]>([]);
   const [formModalVisible, setFormModalVisible] = useState(false);
   const [detailsModalVisible, setDetailsModalVisible] = useState(false);
@@ -24,6 +31,7 @@ export default function Page() {
       <View style={{ flex: 1 }}>
         <Text style={{ textAlign: "center", marginVertical: 10 }}>
           Veja pontos acessíveis na cidade de Sorocaba.
+          <Button title="Sair" onPress={handleLogout} />
         </Text>
 
         <Map
@@ -46,6 +54,7 @@ export default function Page() {
           visible={detailsModalVisible}
           onClose={() => setDetailsModalVisible(false)}
         />
+        
       </View>
     </>
   );
