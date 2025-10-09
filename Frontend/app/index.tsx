@@ -8,6 +8,7 @@ import { Pin } from "../src/types/Pin";
 import { fetchPins } from "../src/services/api";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
+import { MapPressEvent } from "react-native-maps";
 export default function Page() {
   const router = useRouter();
 
@@ -19,10 +20,29 @@ const handleLogout = async () => {
   const [formModalVisible, setFormModalVisible] = useState(false);
   const [detailsModalVisible, setDetailsModalVisible] = useState(false);
   const [selectedPin, setSelectedPin] = useState<Pin | null>(null);
+  const [formData, setFormData] = useState({
+    title: "",
+    category: "",
+    description: "",
+    latitude: 0,
+    longitude: 0,
+  });
 
   useEffect(() => {
     fetchPins().then(setPins).catch(console.error);
   }, []);
+
+  const handleMapPress = (event: MapPressEvent) => {
+    const { latitude, longitude } = event.nativeEvent.coordinate;
+    setFormData({
+      title: "",
+      category: "",
+      description: "",
+      latitude,
+      longitude,
+    });
+    setFormModalVisible(true);
+  };
 
   return (
     <>
@@ -36,7 +56,7 @@ const handleLogout = async () => {
 
         <Map
           pins={pins}
-          onMapPress={() => setFormModalVisible(true)}
+          onMapPress={handleMapPress}
           onMarkerPress={setSelectedPin}
         />
 
@@ -47,6 +67,8 @@ const handleLogout = async () => {
             setPins(newPins);
             setFormModalVisible(false);
           }}
+          formData={formData}
+          setFormData={setFormData}
         />
 
         <PinDetailsModal
