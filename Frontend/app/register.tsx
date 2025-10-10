@@ -1,172 +1,178 @@
-import React, { useState } from "react";
-import { View, Text, TextInput, Button, StyleSheet, Alert, TouchableOpacity } from "react-native";
-import { MaterialCommunityIcons } from '@expo/vector-icons';
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useRouter } from "expo-router";
+// register.tsx
+import React, { useState } from 'react';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Image, Alert } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { useFonts, Nunito_700Bold, Nunito_600SemiBold, Nunito_300Light } from '@expo-google-fonts/nunito';
+import { useRouter } from 'expo-router'; 
+import AsyncStorage from '@react-native-async-storage/async-storage'; 
 
-const styles = StyleSheet.create({
-  container: {
-    justifyContent: "center",
-    width: "80%",
-    alignSelf: "center",
-    marginTop: 40,
-    padding: 24,
-    backgroundColor: "#fff",
-    borderRadius: 8,
-    elevation: 2,
-  },
-  title: {
-    fontSize: 22,
-    fontWeight: "bold",
-    marginBottom: 16,
-    textAlign: "center",
-  },
-  inputGroup: {
-    marginBottom: 16,
-  },
-  input: {
-    width: "100%",
-    padding: 8,
-    marginTop: 4,
-    borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 4,
-    backgroundColor: "#f7f7f7",
-  },
-  error: {
-    color: "red",
-    marginBottom: 16,
-    textAlign: "center",
-  },
-});
 
-const Register = () => {
-  const [form, setForm] = useState({
-    name: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
+const MyWayLogo = require('../assets/images/imagem_inicio.png'); 
+
+export default function RegisterScreen() {
+  const router = useRouter(); 
+  
+  const [nome, setNome] = useState('');
+  const [email, setEmail] = useState('');
+  const [senha, setSenha] = useState('');
+  const [confirmarSenha, setConfirmarSenha] = useState('');
+  
+  const [senhaVisivel, setSenhaVisivel] = useState(false);
+  const [confirmarSenhaVisivel, setConfirmarSenhaVisivel] = useState(false);
+  const [fontsLoaded] = useFonts({
+    Nunito_700Bold,
+    Nunito_600SemiBold,
+    Nunito_300Light,
   });
-  const [error, setError] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const router = useRouter();
 
-  const handleChange = (key: string, value: string) => {
-    setForm({ ...form, [key]: value });
-  };
+  const handleRegister = async () => {
 
-  // Helper functions for validation
-  const isEmailValid = (email: string) => {
-    // Simple regex for email validation
-    return /^\S+@\S+\.\S+$/.test(email);
-  };
-
-  const isPasswordValid = (password: string) => {
-    // At least 8 characters, contains letters and numbers
-    return /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/.test(password);
-  };
-
-  const handleSubmit = async () => {
-    if (!form.name.trim()) {
-      setError("Nome não pode ser vazio");
-      return;
+    if (!nome || !email || !senha || !confirmarSenha) {
+        Alert.alert('Erro', 'Preencha todos os campos.');
+        return;
     }
-    if (!isEmailValid(form.email)) {
-      setError("Email inválido");
-      return;
-    }
-    if (!isPasswordValid(form.password)) {
-      setError("A senha deve ter pelo menos 8 caracteres, incluindo letras e números");
-      return;
-    }
-    if (form.password !== form.confirmPassword) {
-      setError("Senhas não coincidem");
-      return;
+    if (senha !== confirmarSenha) {
+        Alert.alert('Erro', 'As senhas não coincidem.');
+        return;
     }
 
     try {
-      setError("");
-      await AsyncStorage.setItem("user", JSON.stringify(form));
-      Alert.alert("Sucesso", "Usuário cadastrado!");
-      router.replace("/");
-    } catch (err) {
-      console.error(err);
-      setError("Erro ao salvar cadastro");
+      const userData = JSON.stringify({ name: nome, email: email });
+      await AsyncStorage.setItem('user', userData);
+ 
+      router.replace('/'); 
+      
+    } catch (e) {
+      Alert.alert('Erro', 'Falha ao realizar o cadastro. Tente novamente.');
+      console.error(e);
     }
   };
 
+
+  if (!fontsLoaded) return null;
+
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Cadastrar</Text>
-      <View style={styles.inputGroup}>
-        <Text>Nome</Text>
-        <TextInput
-          style={styles.input}
-          value={form.name}
-          onChangeText={(text) => handleChange("name", text)}
-          placeholder="Digite seu nome"
+    <ScrollView contentContainerStyle={styles.container}>
+      {/* Logo */}
+      <Image source={MyWayLogo} style={styles.logo} />
+      
+      <View style={styles.card}>
+        <Text style={styles.label}>Nome</Text>
+        <TextInput 
+          style={styles.input} 
+          placeholder="Digite seu nome" 
+          onChangeText={setNome} 
+          value={nome} 
         />
-      </View>
-      <View style={styles.inputGroup}>
-        <Text>Email</Text>
-        <TextInput
-          style={styles.input}
-          value={form.email}
-          onChangeText={(text) => handleChange("email", text)}
+        
+        <Text style={styles.label}>Email</Text>
+        <TextInput 
+          style={styles.input} 
           placeholder="Digite seu email"
           keyboardType="email-address"
           autoCapitalize="none"
+          onChangeText={setEmail} 
+          value={email} 
         />
-      </View>
-      <View style={styles.inputGroup}>
-        <Text>Senha</Text>
-        <View style={{ position: "relative" }}>
+        
+        <Text style={styles.label}>Senha</Text>
+        <View style={styles.senhaContainer}>
           <TextInput
-            style={[styles.input, { paddingRight: 40 }]}
-            value={form.password}
-            onChangeText={(text) => handleChange("password", text)}
+            style={styles.inputSenha}
             placeholder="Digite sua senha"
-            secureTextEntry={!showPassword}
+            secureTextEntry={!senhaVisivel}
+            onChangeText={setSenha} 
+            value={senha} 
           />
-          <TouchableOpacity
-            onPress={() => setShowPassword((prev) => !prev)}
-            style={{ position: "absolute", right: 10, top: 12 }}
-          >
-            <MaterialCommunityIcons
-              name={showPassword ? "eye-off-outline" : "eye-outline"}
-              size={24}
-              color="#1976d2"
-            />
+          <TouchableOpacity onPress={() => setSenhaVisivel(!senhaVisivel)}>
+            <Ionicons name={senhaVisivel ? 'eye-off' : 'eye'} size={22} color="#555" />
           </TouchableOpacity>
         </View>
-      </View>
-      <View style={styles.inputGroup}>
-        <Text>Confirmar Senha</Text>
-        <View style={{ position: "relative" }}>
+        
+        <Text style={styles.label}>Confirmar Senha</Text>
+        <View style={styles.senhaContainer}>
           <TextInput
-            style={[styles.input, { paddingRight: 40 }]}
-            value={form.confirmPassword}
-            onChangeText={(text) => handleChange("confirmPassword", text)}
+            style={styles.inputSenha}
             placeholder="Confirme sua senha"
-            secureTextEntry={!showConfirmPassword}
+            secureTextEntry={!confirmarSenhaVisivel}
+            onChangeText={setConfirmarSenha} 
+            value={confirmarSenha}
           />
-          <TouchableOpacity
-            onPress={() => setShowConfirmPassword((prev) => !prev)}
-            style={{ position: "absolute", right: 10, top: 12 }}
-          >
-            <MaterialCommunityIcons
-              name={showConfirmPassword ? "eye-off-outline" : "eye-outline"}
-              size={24}
-              color="#1976d2"
-            />
+          <TouchableOpacity onPress={() => setConfirmarSenhaVisivel(!confirmarSenhaVisivel)}>
+            <Ionicons name={confirmarSenhaVisivel ? 'eye-off' : 'eye'} size={22} color="#555" />
           </TouchableOpacity>
         </View>
+        
+        <TouchableOpacity style={styles.botao} onPress={handleRegister}>
+          <Text style={styles.textoBotao}>CADASTRAR</Text>
+        </TouchableOpacity>
       </View>
-      {error ? <Text style={styles.error}>{error}</Text> : null}
-      <Button title="Cadastrar" color="#1976d2" onPress={handleSubmit} />
-    </View>
+    </ScrollView>
   );
-};
+}
 
-export default Register;
+const styles = StyleSheet.create({
+  container: {
+    flexGrow: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#00A9F4', 
+    paddingVertical: 10, 
+  },
+  logo: {
+    width: 600, 
+    height: 600, 
+    resizeMode: 'contain',
+    marginBottom: -170, 
+    marginTop: -170,
+  },
+  card: {
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    padding: 20,
+    width: '85%',
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    elevation: 3,
+  },
+  label: {
+    fontSize: 14,
+
+    fontFamily: 'Nunito_700Bold', 
+    marginBottom: 6,
+    marginTop: 10,
+  },
+  input: {
+    backgroundColor: '#F0F0F0',
+    borderRadius: 8,
+    padding: 10,
+    fontFamily: 'Nunito_300Light',
+    marginBottom: 5, // Pequeno ajuste para espaçamento
+  },
+  senhaContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#F0F0F0',
+    borderRadius: 8,
+    paddingHorizontal: 10,
+    marginBottom: 5, // Pequeno ajuste para espaçamento
+  },
+  inputSenha: {
+    flex: 1,
+    paddingVertical: 10,
+    fontFamily: 'Nunito_300Light',
+  },
+  botao: {
+    backgroundColor: '#00A9F4', 
+    borderRadius: 8,
+    paddingVertical: 14,
+    alignItems: 'center',
+    marginTop: 20,
+  },
+  textoBotao: {
+    color: '#fff',
+    fontSize: 16,
+    fontFamily: 'Nunito_600SemiBold',
+  },
+});
