@@ -1,7 +1,14 @@
 // app/index.tsx
 import { Stack } from "expo-router";
-import React, { useEffect, useState } from "react";
-import { View, Text, Button, StyleSheet, TouchableOpacity } from "react-native"; 
+import React, { useEffect, useState } from "react"; 
+import { 
+  View, 
+  Text, 
+  StyleSheet, 
+  TouchableOpacity, 
+  Image,
+  Dimensions 
+} from "react-native"; 
 import Map from "../src/components/Map";
 import PinFormModal from "../src/components/PinFormModal";
 import PinDetailsModal from "../src/components/PinDetailsModal";
@@ -12,21 +19,38 @@ import { useRouter } from "expo-router";
 import { MapPressEvent } from "react-native-maps";
 import { useFonts, Nunito_700Bold, Nunito_300Light } from '@expo-google-fonts/nunito'; 
 
-const BLUE_COLOR = '#00A9F4'; 
+const { width } = Dimensions.get('window');
+
+// 🚀 Cores e Importação de Imagens (Caminho e nome corrigidos)
+const BLUE_COLOR = '#00A9F4'; // Cor azul principal
+const pinEsq = require('../assets/images/pin_esq.png'); 
+const passosCentro = require('../assets/images/centro_passos_ofc.png'); // <-- Corrigido aqui
+const engrenagemDir = require('../assets/images/engrenagem_dir.png');
+
 
 export default function Page() {
   const router = useRouter();
-
   const [fontsLoaded] = useFonts({
     Nunito_700Bold,
     Nunito_300Light,
   });
-
+  
   const handleLogout = async () => {
     await AsyncStorage.removeItem("user");
     router.replace("/register"); 
   };
   
+  const handlePinEsqPress = () => {
+    console.log("Botão Pin Esquerda Pressionado: Mostrar Pins Salvos");
+  };
+
+  const handlePassosCentroPress = () => {
+    console.log("Botão Passos Centro Pressionado: Iniciar Ação Principal");
+  };
+
+  const handleEngrenagemDirPress = () => {
+    console.log("Botão Engrenagem Direita Pressionado: Abrir Configurações");
+  };
 
   const [pins, setPins] = useState<Pin[]>([]);
   const [formModalVisible, setFormModalVisible] = useState(false);
@@ -56,12 +80,10 @@ export default function Page() {
     setFormModalVisible(true);
   };
 
-
   if (!fontsLoaded) return null;
 
   return (
     <>
-
       <Stack.Screen options={{ 
         title: "Mapa de Acessibilidade",
         headerTitleAlign: 'center', 
@@ -71,17 +93,14 @@ export default function Page() {
         headerTintColor: '#fff', 
         headerTitleStyle: styles.headerTitle, 
       }} />
-
       <View style={styles.container}>
         
         <Text style={styles.descriptionText}>
           Veja pontos acessíveis na cidade de Sorocaba.
         </Text>
-
         <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
             <Text style={styles.logoutButtonText}>SAIR</Text>
         </TouchableOpacity>
-
   
         <View style={styles.mapContainer}> 
             <Map
@@ -93,6 +112,27 @@ export default function Page() {
               }}
             />
         </View>
+        
+        {/* BARRA DE NAVEGAÇÃO */}
+        <View style={styles.navBarContainer}>
+            <View style={styles.navBar}>
+                {/* Botão Esquerda: pin_esq */}
+                <TouchableOpacity style={styles.navButton} onPress={handlePinEsqPress}>
+                    <Image source={pinEsq} style={styles.iconStyle} /> 
+                </TouchableOpacity>
+                
+                {/* Botão Central: centro_passos_ofc (Maior e Elevado) */}
+                <TouchableOpacity style={styles.centerButton} onPress={handlePassosCentroPress}>
+                    <Image source={passosCentro} style={styles.centerIconStyle} />
+                </TouchableOpacity>
+                
+                {/* Botão Direita: engrenagem_dir */}
+                <TouchableOpacity style={styles.navButton} onPress={handleEngrenagemDirPress}>
+                    <Image source={engrenagemDir} style={styles.iconStyle} />
+                </TouchableOpacity>
+            </View>
+        </View>
+        {/* FIM DA BARRA DE NAVEGAÇÃO */}
 
         <PinFormModal
           visible={formModalVisible}
@@ -104,7 +144,6 @@ export default function Page() {
           formData={formData}
           setFormData={setFormData}
         />
-
         <PinDetailsModal
           pin={selectedPin}
           visible={detailsModalVisible}
@@ -115,7 +154,6 @@ export default function Page() {
     </>
   );
 }
-
 
 const styles = StyleSheet.create({
   container: {
@@ -147,10 +185,69 @@ const styles = StyleSheet.create({
     fontFamily: 'Nunito_700Bold', 
     fontSize: 14,
   },
- 
   mapContainer: {
     flex: 1,
     borderWidth: 5, 
     borderColor: BLUE_COLOR, 
+  },
+  
+  // --- ESTILOS DA BARRA DE NAVEGAÇÃO ---
+  navBarContainer: {
+    position: 'absolute',
+    bottom: 0,
+    width: '100%',
+    height: 75, 
+  },
+  navBar: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    height: 70, 
+    backgroundColor: BLUE_COLOR, 
+    borderTopWidth: 5, 
+    borderTopColor: BLUE_COLOR, 
+    paddingHorizontal: 10,
+  },
+  
+  // Botões laterais (Pin e Engrenagem) - SEM BOLAS BRANCAS
+  navButton: {
+    backgroundColor: 'transparent', 
+    width: 55, 
+    height: 55,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  // Ícones laterais (Pin e Engrenagem)
+  iconStyle: {
+    width: 70, 
+    height: 70,
+    resizeMode: 'contain',
+    tintColor: '#fff', // Ícone BRANCO
+    marginBottom: 8,
+  },
+  
+  // Botão Central (Passos)
+  centerButton: {
+    backgroundColor: '#fff', // Fundo BRANCO
+    borderRadius: 50, 
+    width: 80, 
+    height: 80, 
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: -40, // Mantém ele elevado
+    borderWidth: 5, 
+    borderColor: BLUE_COLOR, 
+    shadowColor: '#000', 
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 5,
+    elevation: 8,
+  },
+  // Ícone central (Passos)
+  centerIconStyle: {
+    width: 60, 
+    height: 60,
+    resizeMode: 'contain',
+    tintColor: '#000', // Ícone PRETO
   }
 });
