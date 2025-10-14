@@ -24,7 +24,7 @@ const { width } = Dimensions.get('window');
 // 🚀 Cores e Importação de Imagens (Caminho e nome corrigidos)
 const BLUE_COLOR = '#00A9F4'; // Cor azul principal
 const pinEsq = require('../assets/images/pin_esq.png'); 
-const passosCentro = require('../assets/images/centro_passos_ofc.png'); // <-- Corrigido aqui
+const passosCentro = require('../assets/images/centro_passos_ofc.png'); 
 const engrenagemDir = require('../assets/images/engrenagem_dir.png');
 
 
@@ -219,22 +219,22 @@ const styles = StyleSheet.create({
   },
   // Ícones laterais (Pin e Engrenagem)
   iconStyle: {
-    width: 70, 
-    height: 70,
+    width: 30, // Reduzido de 70 para 30
+    height: 30, // Reduzido de 70 para 30
     resizeMode: 'contain',
     tintColor: '#fff', // Ícone BRANCO
-    marginBottom: 8,
+    marginBottom: 0, // Removido o marginBottom extra
   },
   
   // Botão Central (Passos)
   centerButton: {
     backgroundColor: '#fff', // Fundo BRANCO
     borderRadius: 50, 
-    width: 80, 
-    height: 80, 
+    width: 70, // Reduzido de 80 para 70
+    height: 70, // Reduzido de 80 para 70
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: -40, // Mantém ele elevado
+    marginTop: -30, // Ajustado de -40 para -30 (para corresponder ao 70px)
     borderWidth: 5, 
     borderColor: BLUE_COLOR, 
     shadowColor: '#000', 
@@ -245,8 +245,8 @@ const styles = StyleSheet.create({
   },
   // Ícone central (Passos)
   centerIconStyle: {
-    width: 60, 
-    height: 60,
+    width: 40, // Reduzido de 60 para 40
+    height: 40, // Reduzido de 60 para 40
     resizeMode: 'contain',
     tintColor: '#000', // Ícone PRETO
   }
