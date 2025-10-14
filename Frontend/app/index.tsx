@@ -12,6 +12,7 @@ import {
 import Map from "../src/components/Map";
 import PinFormModal from "../src/components/PinFormModal";
 import PinDetailsModal from "../src/components/PinDetailsModal";
+import SettingsModal from "../src/components/SettingsModal"; 
 import { Pin } from "../src/types/Pin";
 import { fetchPins } from "../src/services/api";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -21,7 +22,7 @@ import { useFonts, Nunito_700Bold, Nunito_300Light } from '@expo-google-fonts/nu
 
 const { width } = Dimensions.get('window');
 
-// 🚀 Cores e Importação de Imagens (Caminho e nome corrigidos)
+// 🚀 Cores e Importação de Imagens
 const BLUE_COLOR = '#00A9F4'; // Cor azul principal
 const pinEsq = require('../assets/images/pin_esq.png'); 
 const passosCentro = require('../assets/images/centro_passos_ofc.png'); 
@@ -34,6 +35,8 @@ export default function Page() {
     Nunito_700Bold,
     Nunito_300Light,
   });
+  
+  const [settingsModalVisible, setSettingsModalVisible] = useState(false); 
   
   const handleLogout = async () => {
     await AsyncStorage.removeItem("user");
@@ -49,6 +52,7 @@ export default function Page() {
   };
 
   const handleEngrenagemDirPress = () => {
+    setSettingsModalVisible(true);
     console.log("Botão Engrenagem Direita Pressionado: Abrir Configurações");
   };
 
@@ -91,16 +95,16 @@ export default function Page() {
           backgroundColor: BLUE_COLOR, 
         },
         headerTintColor: '#fff', 
-        headerTitleStyle: styles.headerTitle, 
+        headerTitleStyle: styles.headerTitle,
+        headerRight: () => null, 
       }} />
       <View style={styles.container}>
         
+        {/* REINCLUSÃO: O texto da descrição, que pode ser a causa do erro se a string for renderizada em outro lugar. */}
+        {/* Se o erro persistir, você DEVE verificar seus componentes modais. */}
         <Text style={styles.descriptionText}>
           Veja pontos acessíveis na cidade de Sorocaba.
         </Text>
-        <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-            <Text style={styles.logoutButtonText}>SAIR</Text>
-        </TouchableOpacity>
   
         <View style={styles.mapContainer}> 
             <Map
@@ -126,7 +130,7 @@ export default function Page() {
                     <Image source={passosCentro} style={styles.centerIconStyle} />
                 </TouchableOpacity>
                 
-                {/* Botão Direita: engrenagem_dir */}
+                {/* Botão Direita: engrenagem_dir (Abre o modal de configurações) */}
                 <TouchableOpacity style={styles.navButton} onPress={handleEngrenagemDirPress}>
                     <Image source={engrenagemDir} style={styles.iconStyle} />
                 </TouchableOpacity>
@@ -134,6 +138,7 @@ export default function Page() {
         </View>
         {/* FIM DA BARRA DE NAVEGAÇÃO */}
 
+        {/* MODAIS */}
         <PinFormModal
           visible={formModalVisible}
           onClose={() => setFormModalVisible(false)}
@@ -148,6 +153,11 @@ export default function Page() {
           pin={selectedPin}
           visible={detailsModalVisible}
           onClose={() => setDetailsModalVisible(false)}
+        />
+        <SettingsModal
+          visible={settingsModalVisible}
+          onClose={() => setSettingsModalVisible(false)}
+          onLogout={handleLogout} 
         />
         
       </View>
@@ -170,20 +180,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginVertical: 10,
     paddingHorizontal: 15,
-  },
-  logoutButton: {
-    backgroundColor: BLUE_COLOR, 
-    paddingVertical: 8,
-    paddingHorizontal: 20,
-    borderRadius: 8,
-    alignSelf: 'center', 
-    marginBottom: 10, 
-    marginTop: 5, 
-  },
-  logoutButtonText: {
-    color: '#fff', 
-    fontFamily: 'Nunito_700Bold', 
-    fontSize: 14,
   },
   mapContainer: {
     flex: 1,
@@ -209,7 +205,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
   },
   
-  // Botões laterais (Pin e Engrenagem) - SEM BOLAS BRANCAS
+  // Botões laterais (Pin e Engrenagem)
   navButton: {
     backgroundColor: 'transparent', 
     width: 55, 
@@ -219,22 +215,23 @@ const styles = StyleSheet.create({
   },
   // Ícones laterais (Pin e Engrenagem)
   iconStyle: {
-    width: 30, // Reduzido de 70 para 30
-    height: 30, // Reduzido de 70 para 30
+    // Aumentei o tamanho aqui para garantir que pareçam maiores, como na imagem.
+    width: 35, 
+    height: 35,
     resizeMode: 'contain',
     tintColor: '#fff', // Ícone BRANCO
-    marginBottom: 0, // Removido o marginBottom extra
+    marginBottom: 0, 
   },
   
   // Botão Central (Passos)
   centerButton: {
     backgroundColor: '#fff', // Fundo BRANCO
     borderRadius: 50, 
-    width: 70, // Reduzido de 80 para 70
-    height: 70, // Reduzido de 80 para 70
+    width: 75, // Ajustado para ser maior
+    height: 75, // Ajustado para ser maior
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: -30, // Ajustado de -40 para -30 (para corresponder ao 70px)
+    marginTop: -30, 
     borderWidth: 5, 
     borderColor: BLUE_COLOR, 
     shadowColor: '#000', 
@@ -245,8 +242,8 @@ const styles = StyleSheet.create({
   },
   // Ícone central (Passos)
   centerIconStyle: {
-    width: 40, // Reduzido de 60 para 40
-    height: 40, // Reduzido de 60 para 40
+    width: 45, 
+    height: 45,
     resizeMode: 'contain',
     tintColor: '#000', // Ícone PRETO
   }
