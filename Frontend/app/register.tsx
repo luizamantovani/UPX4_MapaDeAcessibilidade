@@ -5,12 +5,6 @@ import { Ionicons } from '@expo/vector-icons';
 import { useFonts, Nunito_700Bold, Nunito_600SemiBold, Nunito_300Light } from '@expo-google-fonts/nunito';
 import { useRouter } from 'expo-router'; 
 import AsyncStorage from '@react-native-async-storage/async-storage'; 
-import { createClient } from '@supabase/supabase-js';
-
-// TODO: Replace with your Supabase project credentials
-const supabaseUrl = 'https://jkzhukadywupkudgnkvh.supabase.co';
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impremh1a2FkeXd1cGt1ZGdua3ZoIiwicm9sZSI6ImF1dGhlbnRpY2F0ZWQiLCJpYXQiOjE3NjA1MDE2NTYsImV4cCI6MjA3NjA3NzY1Nn0.o8mX4k2b0jv7gkLh8H5Uu0k3rX1jv8yW8v5yZl5gXoQ'; // <-- Replace with your real anon key
-const supabase = createClient(supabaseUrl, supabaseKey);
 
 
 const MyWayLogo = require('../assets/images/imagem_inicio.png'); 
@@ -32,32 +26,22 @@ export default function RegisterScreen() {
   });
 
   const handleRegister = async () => {
+
     if (!nome || !email || !senha || !confirmarSenha) {
-      Alert.alert('Erro', 'Preencha todos os campos.');
-      return;
+        Alert.alert('Erro', 'Preencha todos os campos.');
+        return;
     }
     if (senha !== confirmarSenha) {
-      Alert.alert('Erro', 'As senhas não coincidem.');
-      return;
+        Alert.alert('Erro', 'As senhas não coincidem.');
+        return;
     }
 
     try {
-      // Supabase signup
-      const { error, data } = await supabase.auth.signUp({
-        email: email,
-        password: senha,
-        options: {
-          data: { name: nome }
-        }
-      });
-      if (error) {
-        Alert.alert('Erro', error.message);
-        return;
-      }
-      // Optionally save user locally
-      await AsyncStorage.setItem('user', JSON.stringify({ name: nome, email: email }));
-      Alert.alert('Sucesso', 'Cadastro realizado! Verifique seu email para confirmar.');
-      router.replace('/');
+      const userData = JSON.stringify({ name: nome, email: email });
+      await AsyncStorage.setItem('user', userData);
+ 
+      router.replace('/'); 
+      
     } catch (e) {
       Alert.alert('Erro', 'Falha ao realizar o cadastro. Tente novamente.');
       console.error(e);
