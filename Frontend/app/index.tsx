@@ -7,7 +7,6 @@ import {
   StyleSheet, 
   TouchableOpacity, 
   Image,
-  Dimensions 
 } from "react-native"; 
 import Map from "../src/components/Map";
 import PinFormModal from "../src/components/PinFormModal";
@@ -20,7 +19,7 @@ import { MapPressEvent } from "react-native-maps";
 import * as Location from 'expo-location';
 import { useFonts, Nunito_700Bold, Nunito_300Light } from '@expo-google-fonts/nunito'; 
 
-const { width } = Dimensions.get('window');
+// const { width } = Dimensions.get('window'); // não utilizado
 
 // 🚀 Cores e Importação de Imagens
 const BLUE_COLOR = '#00A9F4'; // Cor azul principal
@@ -82,8 +81,9 @@ export default function Page() {
         return;
       }
       try {
-        let location = await Location.getCurrentPositionAsync({});
-        setLocation(location);
+        // renomeia a variável local para evitar shadowing com o state `location`
+        const currentLocation = await Location.getCurrentPositionAsync({});
+        setLocation(currentLocation);
       } catch (e) {
         console.error('Error getting location:', e);
       }
@@ -99,7 +99,7 @@ export default function Page() {
         timeInterval: 10000,
         distanceInterval: 1
       },
-      (location) => setLocation(location)
+    (pos) => setLocation(pos)
     )
       .then(sub => {
         subscription = sub;
@@ -150,6 +150,7 @@ export default function Page() {
         <View style={styles.mapContainer}> 
             <Map
               pins={pins}
+              userLocation={location}
               onMapPress={handleMapPress}
               onMarkerPress={(pin) => {
                 setSelectedPin(pin);
