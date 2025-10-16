@@ -56,7 +56,7 @@ export default function Page() {
     console.log("Botão Engrenagem Direita Pressionado: Abrir Configurações");
   };
 
-  const [, setLocation] = useState<Location.LocationObject | null>(null);
+  const [location, setLocation] = useState<Location.LocationObject | null>(null);
   const [pins, setPins] = useState<Pin[]>([]);
   const [formModalVisible, setFormModalVisible] = useState(false);
   const [detailsModalVisible, setDetailsModalVisible] = useState(false);
@@ -69,6 +69,11 @@ export default function Page() {
     longitude: 0,
   });
 
+  useEffect(() => {
+    fetchPins().then(setPins).catch(console.error);
+  }, [])
+
+  // solicita permissão para acessar a localização do usuário e obtém a localização atual 
   useEffect(() => {
     ( async () => {
       const { status } = await Location.requestForegroundPermissionsAsync();
@@ -83,8 +88,29 @@ export default function Page() {
         console.error('Error getting location:', e);
       }
     })();
+  }, []);
 
-    fetchPins().then(setPins).catch(console.error);
+  // atualiza a localização do usuário em tempo real
+  useEffect(() => {
+    let subscription: Location.LocationSubscription | null = null;
+    Location.watchPositionAsync(
+      {
+        accuracy: Location.Accuracy.High,
+        timeInterval: 10000,
+        distanceInterval: 1
+      },
+      (location) => setLocation(location)
+    )
+      .then(sub => {
+        subscription = sub;
+      })
+      .catch(console.error);
+
+    return () => {
+      if (subscription && typeof subscription.remove === 'function') {
+        subscription.remove();
+      }
+    };
   }, []);
 
   const handleMapPress = (event: MapPressEvent) => {
