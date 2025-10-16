@@ -1,5 +1,5 @@
 // app/index.tsx
-import { Stack } from "expo-router";
+import { Stack, useRouter } from "expo-router";
 import React, { useEffect, useState } from "react"; 
 import { 
   View, 
@@ -16,8 +16,8 @@ import SettingsModal from "../src/components/SettingsModal";
 import { Pin } from "../src/types/Pin";
 import { fetchPins } from "../src/services/api";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useRouter } from "expo-router";
 import { MapPressEvent } from "react-native-maps";
+import * as Location from 'expo-location';
 import { useFonts, Nunito_700Bold, Nunito_300Light } from '@expo-google-fonts/nunito'; 
 
 const { width } = Dimensions.get('window');
@@ -56,6 +56,7 @@ export default function Page() {
     console.log("Botão Engrenagem Direita Pressionado: Abrir Configurações");
   };
 
+  const [, setLocation] = useState<Location.LocationObject | null>(null);
   const [pins, setPins] = useState<Pin[]>([]);
   const [formModalVisible, setFormModalVisible] = useState(false);
   const [detailsModalVisible, setDetailsModalVisible] = useState(false);
@@ -69,6 +70,20 @@ export default function Page() {
   });
 
   useEffect(() => {
+    ( async () => {
+      const { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') {
+        console.log('Permission to access location was denied');
+        return;
+      }
+      try {
+        let location = await Location.getCurrentPositionAsync({});
+        setLocation(location);
+      } catch (e) {
+        console.error('Error getting location:', e);
+      }
+    })();
+
     fetchPins().then(setPins).catch(console.error);
   }, []);
 

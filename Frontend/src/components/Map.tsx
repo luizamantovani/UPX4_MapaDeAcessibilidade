@@ -11,6 +11,8 @@ type MapProps = {
 export default function Map({ pins, onMapPress, onMarkerPress }: MapProps) {
   return (
     <MapView
+      showsMyLocationButton={true}
+      showsUserLocation={true}
       style={{ flex: 1 }}
       initialCamera={{
         center: { latitude: -23.5015, longitude: -47.4526 },
