@@ -29,7 +29,11 @@ interface PinFormModalProps {
   }>>;
 }
 
-const CATEGORIES = ["Rampa", "Banheiro Acessível", "Elevador", "Vaga Especial"]; 
+// categorias disponíveis para o dropdown
+const CATEGORIES = [
+  { label: "Acessível", value: "acessivel" },
+  { label: "Não acessível", value: "nao_acessivel" },
+];
 
 const PinFormModal: React.FC<PinFormModalProps> = ({ visible, onClose, onSaved, formData, setFormData }) => {
   
@@ -45,13 +49,15 @@ const PinFormModal: React.FC<PinFormModalProps> = ({ visible, onClose, onSaved, 
         return;
     }
     
-    const newPin: Pin = {
-        id: Math.floor(Math.random() * 100000), 
-        ...formData, 
-    };
-    
-    Alert.alert("Sucesso", "Ponto de acessibilidade salvo!");
-    onClose(); 
+  const newPin: Pin = {
+    id: Math.floor(Math.random() * 100000),
+    ...formData,
+  };
+
+  // passa o novo pin para o parent via onSaved (parent pode atualizar lista)
+  onSaved([newPin]);
+  Alert.alert("Sucesso", "Ponto de acessibilidade salvo!");
+  onClose();
   };
 
   if (!fontsLoaded) return null;
@@ -85,8 +91,13 @@ const PinFormModal: React.FC<PinFormModalProps> = ({ visible, onClose, onSaved, 
               itemStyle={styles.pickerItem} // 👈 Adiciona itemStyle para iOS
             >
               <Picker.Item label="Selecione" value="" style={styles.pickerItem} />
-              {CATEGORIES.map(category => (
-                <Picker.Item key={category} label={category} value={category} style={styles.pickerItem} />
+              {CATEGORIES.map((category) => (
+                <Picker.Item
+                  key={category.value}
+                  label={category.label}
+                  value={category.value}
+                  style={styles.pickerItem}
+                />
               ))}
             </Picker>
           </View>
