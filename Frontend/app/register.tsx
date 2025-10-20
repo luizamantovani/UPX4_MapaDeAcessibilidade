@@ -6,6 +6,7 @@ import { useFonts, Nunito_700Bold, Nunito_600SemiBold, Nunito_300Light } from '@
 import { useRouter } from 'expo-router'; 
 import AsyncStorage from '@react-native-async-storage/async-storage'; 
 import { createClient } from '@supabase/supabase-js';
+import translateSupabaseError from '../src/utils/translateSupabaseError';
 
 const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL!;
 const supabaseKey = process.env.EXPO_PUBLIC_SUPABASE_KEY!;
@@ -50,7 +51,8 @@ export default function RegisterScreen() {
         }
       });
       if (error) {
-        Alert.alert('Erro', error.message);
+        const message = translateSupabaseError(error);
+        Alert.alert('Erro', message);
         return;
       }
       // Optionally save user locally

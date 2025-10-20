@@ -3,6 +3,7 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'reac
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { createClient } from '@supabase/supabase-js';
+import translateSupabaseError from '../src/utils/translateSupabaseError';
 
 const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL!;
 const supabaseKey = process.env.EXPO_PUBLIC_SUPABASE_KEY!;
@@ -30,7 +31,8 @@ export default function LoginScreen() {
         password: senha,
       });
       if (error) {
-        Alert.alert('Erro', error.message);
+        const message = translateSupabaseError(error);
+        Alert.alert('Erro', message);
         return;
       }
       Alert.alert('Sucesso', 'Login realizado!');
