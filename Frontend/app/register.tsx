@@ -5,6 +5,11 @@ import { Ionicons } from '@expo/vector-icons';
 import { useFonts, Nunito_700Bold, Nunito_600SemiBold, Nunito_300Light } from '@expo-google-fonts/nunito';
 import { useRouter } from 'expo-router'; 
 import AsyncStorage from '@react-native-async-storage/async-storage'; 
+import { createClient } from '@supabase/supabase-js';
+
+const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL!;
+const supabaseKey = process.env.EXPO_PUBLIC_SUPABASE_KEY!;
+const supabase = createClient(supabaseUrl, supabaseKey);
 
 
 const MyWayLogo = require('../assets/images/imagem_inicio.png'); 
@@ -26,22 +31,32 @@ export default function RegisterScreen() {
   });
 
   const handleRegister = async () => {
-
     if (!nome || !email || !senha || !confirmarSenha) {
-        Alert.alert('Erro', 'Preencha todos os campos.');
-        return;
+      Alert.alert('Erro', 'Preencha todos os campos.');
+      return;
     }
     if (senha !== confirmarSenha) {
-        Alert.alert('Erro', 'As senhas não coincidem.');
-        return;
+      Alert.alert('Erro', 'As senhas não coincidem.');
+      return;
     }
 
     try {
-      const userData = JSON.stringify({ name: nome, email: email });
-      await AsyncStorage.setItem('user', userData);
- 
-      router.replace('/'); 
-      
+      // Supabase signup
+      const { error, data } = await supabase.auth.signUp({
+        email: email,
+        password: senha,
+        options: {
+          data: { name: nome }
+        }
+      });
+      if (error) {
+        Alert.alert('Erro', error.message);
+        return;
+      }
+      // Optionally save user locally
+      await AsyncStorage.setItem('user', JSON.stringify({ name: nome, email: email }));
+      Alert.alert('Sucesso', 'Cadastro realizado! Verifique seu email para confirmar.');
+      router.replace('/');
     } catch (e) {
       Alert.alert('Erro', 'Falha ao realizar o cadastro. Tente novamente.');
       console.error(e);
@@ -106,6 +121,9 @@ export default function RegisterScreen() {
         <TouchableOpacity style={styles.botao} onPress={handleRegister}>
           <Text style={styles.textoBotao}>CADASTRAR</Text>
         </TouchableOpacity>
+        <Text style={styles.textoLinkCadastro} onPress={() => router.push('/login')}>
+          Já tem uma conta? Faça login
+        </Text>
       </View>
     </ScrollView>
   );
@@ -174,5 +192,9 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
     fontFamily: 'Nunito_600SemiBold',
+  },
+  textoLinkCadastro: {
+    color: '#00A9F4',
+    marginTop: 18,
   },
 });

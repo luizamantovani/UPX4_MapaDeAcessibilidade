@@ -36,7 +36,7 @@ export default function Layout() {
   }
 
    return (
-    <Stack initialRouteName={isRegistered ? "index" : "register"}>
+    <Stack initialRouteName={isRegistered ? "index" : "login"}>
       <Stack.Screen name="index" options={{ title: "Mapa" }} />
       <Stack.Screen name="register" options={{ headerShown: false }} />
     </Stack>
