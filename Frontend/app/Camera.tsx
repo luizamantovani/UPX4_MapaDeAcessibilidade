@@ -1,20 +1,27 @@
 import { CameraView, CameraType, useCameraPermissions } from "expo-camera";
-import { use, useState, useEffect, useRef } from "react";
+import { useState, useRef } from "react";
 import {
-    Alert,
+  Alert,
+  ActivityIndicator,
   Button,
+  Image,
+  Modal,
   StatusBar,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
+import { uploadImage, getUser } from "../src/utils/supabase";
 
 export default function Camera() {
   const [facing, setFacing] = useState<CameraType>("back");
   const [permission, requestPermission] = useCameraPermissions();
 
   const cameraRef = useRef<CameraView>(null);
+  const [image, setImage] = useState<string | null>(null);
+  const [previewVisible, setPreviewVisible] = useState(false);
+  const [uploading, setUploading] = useState(false);
 
   if (!permission) {
     // Camera permissions are still loading.
@@ -54,6 +61,107 @@ export default function Camera() {
     }
   };
 
+  // Gera um UUID simples (sem dependências externas)
+  const uuidv4 = () => {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+      const r = Math.floor(Math.random() * 16);
+      const v = c === 'x' ? r : (r & 0x3) | 0x8;
+      return v.toString(16);
+    });
+  };
+
+  const handleTakePress = async () => {
+    const response = await takePhoto();
+    if (response?.uri) {
+      setImage(response.uri);
+      setPreviewVisible(true);
+    }
+  };
+
+  const handleSend = async () => {
+    if (!image) return;
+    try {
+      setUploading(true);
+      // tentar obter userId, caso exista
+      let userId = 'anon';
+      try {
+        const user = await getUser();
+        userId = (user && (user as any).id) || 'anon';
+      } catch (e) {
+        // não bloquear o upload se não conseguir user
+        console.warn('Não foi possível obter userId:', e);
+      }
+      const filename = `pins/${userId}-${uuidv4()}.jpg`;
+      await uploadImage({ fileUri: image, bucket: 'images', path: filename });
+      setUploading(false);
+      setPreviewVisible(false);
+      setImage(null);
+      Alert.alert('Sucesso', 'Imagem enviada.');
+    } catch (err: any) {
+      console.error('Erro upload:', err);
+      setUploading(false);
+      Alert.alert('Erro', err?.message || 'Falha ao enviar imagem');
+    }
+  };
+
+  const handleRepeat = () => {
+    // Limpa a imagem e fecha o preview para forçar nova captura
+    setImage(null);
+    setPreviewVisible(false);
+  };
+
+  const handleCancel = () => {
+    setPreviewVisible(false);
+    setImage(null);
+  };
+
+  const renderPreviewModal = () => (
+    <Modal
+      visible={previewVisible}
+      animationType="slide"
+      transparent={true}
+      onRequestClose={() => setPreviewVisible(false)}
+    >
+      <View style={styles.modalOverlay}>
+        <View style={styles.modalContent}>
+          {image ? (
+            <Image source={{ uri: image }} style={styles.previewImage} />
+          ) : (
+            <Text>Nenhuma imagem</Text>
+          )}
+
+          <View style={styles.modalButtons}>
+            <TouchableOpacity
+              style={[styles.modalButton, { backgroundColor: '#4caf50' }]}
+              onPress={handleSend}
+              disabled={uploading}
+            >
+              {uploading ? (
+                <ActivityIndicator color="white" />
+              ) : (
+                <Text style={styles.text}>Enviar</Text>
+              )}
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[styles.modalButton, { backgroundColor: '#2196f3' }]}
+              onPress={handleRepeat}
+            >
+              <Text style={styles.text}>Repetir</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[styles.modalButton, { backgroundColor: '#f44336' }]}
+              onPress={handleCancel}
+            >
+              <Text style={styles.text}>Cancelar</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </View>
+    </Modal>
+  );
+
   return (
     <View style={styles.container}>
       <StatusBar hidden />
@@ -63,15 +171,14 @@ export default function Camera() {
           style={styles.flipButton}
           onPress={toggleCameraFacing}
         >
-          <Text style={styles.text}>Flip Camera</Text>
+          <Text style={styles.text}>Virar Câmera</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.photoButton} onPress={async () => {
-            const response = await takePhoto();
-            Alert.alert("Photo taken!", `Photo URI: ${response?.uri}`);
-            }}>
+        <TouchableOpacity style={styles.photoButton} onPress={handleTakePress}>
           <Text style={styles.text}>Tirar foto</Text>
         </TouchableOpacity>
       </View>
+      {renderPreviewModal()}
+
     </View>
   );
 }
@@ -117,13 +224,46 @@ const styles = StyleSheet.create({
   photoButton: {
     flex: 1,
     alignItems: "center",
-    backgroundColor: "#878a88",
+    backgroundColor: "#b8cabeff",
     borderRadius: 12, // bordas arredondadas para o botão
     paddingVertical: 8,
   },
   text: {
-    fontSize: 24,
+    fontSize: 22,
     fontWeight: "bold",
     color: "white",
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.6)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 16,
+  },
+  modalContent: {
+    width: '100%',
+    maxWidth: 520,
+    backgroundColor: '#ffffff',
+    borderRadius: 12,
+    padding: 12,
+    alignItems: 'center',
+  },
+  previewImage: {
+    width: '100%',
+    height: 360,
+    borderRadius: 8,
+    marginBottom: 12,
+  },
+  modalButtons: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
+  },
+  modalButton: {
+    flex: 1,
+    marginHorizontal: 6,
+    paddingVertical: 10,
+    borderRadius: 8,
+    alignItems: 'center',
   },
 });
