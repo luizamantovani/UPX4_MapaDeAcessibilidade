@@ -36,7 +36,6 @@ if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
 }
 
 export const supabase: SupabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-  // Persistir sessão no AsyncStorage em React Native / Expo
   auth: { storage: AsyncStorage },
 });
 
@@ -60,9 +59,7 @@ export async function getUser() {
   try {
     const { data, error } = await supabase.auth.getUser();
     if (error) {
-      // Se o erro for sessão ausente, retornar null silenciosamente
-      // para evitar poluir logs em cenários onde o usuário não está logado.
-      // Outros erros ainda são lançados.
+
       const message = (error as any)?.message || '';
       if (message.includes('Auth session missing') || message.includes('No active session')) {
         return null;
@@ -71,8 +68,6 @@ export async function getUser() {
     }
     return data?.user || null;
   } catch (err) {
-    // Caso o SDK lance uma instância específica (ex: AuthSessionMissingError),
-    // tratamos aqui também e retornamos null.
     const msg = (err as any)?.message || '';
     if (msg.includes('Auth session missing') || msg.includes('No active session')) {
       return null;
@@ -81,7 +76,6 @@ export async function getUser() {
   }
 }
 
-// Upload de imagem (uri -> blob -> storage)
 export async function uploadImage({
   fileUri,
   bucket = 'images',
@@ -93,7 +87,7 @@ export async function uploadImage({
   path: string; // caminho destino, ex: `pins/123/photo.jpg`
   upsert?: boolean;
 }) {
-  // Primeiro, tentar o fluxo padrão: fetch(fileUri) -> blob -> upload
+
   try {
     const response = await fetch(fileUri);
     const blob = await response.blob();
@@ -103,14 +97,11 @@ export async function uploadImage({
       .upload(path, blob, { upsert });
 
     if (error) throw error;
-    return data; // { Key }
+    return data; 
   } catch (originalError) {
-    // Fallback para React Native/Expo: ler como base64 e enviar via REST PUT
-    // (resolve problemas de `fetch(fileUri)` ou blobs em alguns ambientes)
     try {
       const b64 = await FileSystem.readAsStringAsync(fileUri, { encoding: FileSystem.EncodingType.Base64 });
 
-      // converte base64 para Uint8Array sem depender de atob
       const b64ToUint8Array = (b64String: string) => {
         const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
         const lookup = new Uint8Array(256);
@@ -152,11 +143,9 @@ export async function uploadImage({
         throw new Error(`Upload failed: ${res.status} ${res.statusText} - ${text}`);
       }
 
-      // Retornar formato similar ao supabase.storage.upload
       return { Key: path } as any;
     } catch (fallbackError) {
-      // Ambos falharam: propagar o erro original para ajudar no diagnóstico
-      // (podemos priorizar o fallbackError, mas manter o original também é útil)
+
       (originalError as any).fallback = fallbackError;
       throw originalError;
     }
@@ -171,7 +160,6 @@ export function getPublicUrl(bucket: string, path: string) {
 // Pequeno helper para obter a URL pública de um arquivo e, opcionalmente,
 // verificar se existe.
 export async function getDownloadUrl(bucket: string, path: string) {
-  // Observação: se o bucket for privado, será necessário usar supabase.storage.createSignedUrl
   const { data } = supabase.storage.from(bucket).getPublicUrl(path);
   return data?.publicUrl || null;
 }
