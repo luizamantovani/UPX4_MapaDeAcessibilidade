@@ -1,10 +1,12 @@
 // src/components/PinFormModal.tsx
 
-import React from 'react';
-import { View, Text, Modal, TextInput, TouchableOpacity, StyleSheet, Alert, Dimensions } from 'react-native'; // 👈 Importa Dimensions
+import React, { useContext } from 'react';
+import { View, Text, Modal, TextInput, TouchableOpacity, StyleSheet, Alert, Dimensions, Image } from 'react-native'; // 👈 Importa Dimensions
 import { Picker } from '@react-native-picker/picker'; 
 import { useFonts, Nunito_700Bold, Nunito_600SemiBold, Nunito_300Light } from '@expo-google-fonts/nunito'; 
 import { Pin } from '../types/Pin'; 
+import { router } from 'expo-router';
+import { FormContext } from '../context/FormContext';
 
 // Obtém a largura da tela para calcular a largura do modal
 const { width } = Dimensions.get('window');
@@ -19,6 +21,7 @@ interface PinFormModalProps {
     description: string;
     latitude: number;
     longitude: number;
+    imageUrl?: string | null;
   };
   setFormData: React.Dispatch<React.SetStateAction<{
     title: string;
@@ -26,6 +29,7 @@ interface PinFormModalProps {
     description: string;
     latitude: number;
     longitude: number;
+    imageUrl?: string | null;
   }>>;
 }
 
@@ -36,12 +40,13 @@ const CATEGORIES = [
 ];
 
 const PinFormModal: React.FC<PinFormModalProps> = ({ visible, onClose, onSaved, formData, setFormData }) => {
-  
   const [fontsLoaded] = useFonts({
     Nunito_700Bold,
     Nunito_600SemiBold,
     Nunito_300Light,
   });
+
+  const formCtx = useContext(FormContext);
 
   const handleSave = () => {
     if (!formData.title || !formData.category || !formData.description) {
@@ -110,7 +115,29 @@ const PinFormModal: React.FC<PinFormModalProps> = ({ visible, onClose, onSaved, 
             multiline
             numberOfLines={4}
           />
-          
+
+          {formData.imageUrl ? (
+            <Image source={{ uri: formData.imageUrl }} style={styles.previewImage} />
+          ) : null}
+
+          <TouchableOpacity
+            style={styles.cameraButton}
+            onPress={() => {
+              // salva no contexto antes de navegar para que os dados sejam preservados
+              formCtx.setFormData({
+                title: formData.title,
+                category: formData.category,
+                description: formData.description,
+                latitude: formData.latitude,
+                longitude: formData.longitude,
+              });
+              // cast para 'any' para contornar tipos gerados do expo-router
+              router.push('/Camera' as any);
+            }}
+          >
+            <Text style={styles.cameraButtonText}>TIRAR FOTO</Text>
+          </TouchableOpacity>
+
           <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
             <Text style={styles.saveButtonText}>SALVAR PONTO</Text>
           </TouchableOpacity>
@@ -193,6 +220,18 @@ const styles = StyleSheet.create({
     fontSize: 14, // Define um tamanho de fonte para os itens
     color: '#333', // Cor do texto dos itens
   },
+  cameraButton: {
+    backgroundColor: '#7f8881ff',
+    borderRadius: 8,
+    padding: 14,
+    alignItems: 'center',
+    marginTop: 15,
+  },
+  cameraButtonText: {
+    color: 'white',
+    fontFamily: 'Nunito_700Bold',
+    fontSize: 16,
+  },
   saveButton: {
     backgroundColor: '#00A9F4',
     borderRadius: 8,
@@ -216,6 +255,12 @@ const styles = StyleSheet.create({
     color: 'white',
     fontFamily: 'Nunito_700Bold',
     fontSize: 16,
+  },
+  previewImage: {
+    width: '100%',
+    height: 180,
+    borderRadius: 8,
+    marginTop: 12,
   },
 });
 

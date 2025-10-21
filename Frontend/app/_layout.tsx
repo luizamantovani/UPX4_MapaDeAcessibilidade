@@ -2,6 +2,7 @@ import { Stack } from "expo-router";
 import { useEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { ActivityIndicator, View } from "react-native";
+import { FormProvider } from "../src/context/FormContext";
 
 import {
   useFonts,
@@ -36,9 +37,11 @@ export default function Layout() {
   }
 
    return (
-    <Stack initialRouteName={isRegistered ? "index" : "login"}>
-      <Stack.Screen name="index" options={{ title: "Mapa" }} />
-      <Stack.Screen name="register" options={{ headerShown: false }} />
-    </Stack>
+    <FormProvider>
+      <Stack initialRouteName={isRegistered ? "index" : "login"}>
+        <Stack.Screen name="index" options={{ title: "Mapa" }} />
+        <Stack.Screen name="register" options={{ headerShown: false }} />
+      </Stack>
+    </FormProvider>
   );
 }
