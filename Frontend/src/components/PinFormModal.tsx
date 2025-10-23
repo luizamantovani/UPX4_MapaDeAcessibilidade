@@ -1,7 +1,7 @@
 // src/components/PinFormModal.tsx
 
 import React, { useContext } from 'react';
-import { View, Text, Modal, TextInput, TouchableOpacity, StyleSheet, Alert, Dimensions, Image } from 'react-native'; // 👈 Importa Dimensions
+import { View, Text, Modal, TextInput, TouchableOpacity, StyleSheet, Alert, Dimensions, Image, ActivityIndicator } from 'react-native'; // 👈 Importa Dimensions
 import { Picker } from '@react-native-picker/picker'; 
 import { useFonts, Nunito_700Bold, Nunito_600SemiBold, Nunito_300Light } from '@expo-google-fonts/nunito'; 
 import { Pin } from '../types/Pin'; 
@@ -47,8 +47,10 @@ const PinFormModal: React.FC<PinFormModalProps> = ({ visible, onClose, onSaved, 
   });
 
   const formCtx = useContext(FormContext);
+  const [isImageLoading, setIsImageLoading] = React.useState(false);
 
   const handleSave = () => {
+    // limpa o contexto compartilhado (imagem e dados temporários)
     if (!formData.title || !formData.category || !formData.description) {
         Alert.alert("Erro", "Por favor, preencha todos os campos.");
         return;
@@ -57,11 +59,13 @@ const PinFormModal: React.FC<PinFormModalProps> = ({ visible, onClose, onSaved, 
   const newPin: Pin = {
     id: Math.floor(Math.random() * 100000),
     ...formData,
+    imageUrl: formData.imageUrl || formCtx.formData.imageUrl || null,
   };
 
   // passa o novo pin para o parent via onSaved (parent pode atualizar lista)
   onSaved([newPin]);
   Alert.alert("Sucesso", "Ponto de acessibilidade salvo!");
+  if (formCtx && formCtx.resetForm) formCtx.resetForm();
   onClose();
   };
 
@@ -116,8 +120,21 @@ const PinFormModal: React.FC<PinFormModalProps> = ({ visible, onClose, onSaved, 
             numberOfLines={4}
           />
 
-          {formData.imageUrl ? (
-            <Image source={{ uri: formData.imageUrl }} style={styles.previewImage} />
+          {(formData.imageUrl || formCtx.formData.imageUrl) ? (
+            <View style={styles.previewWrapper}>
+              <Image
+                source={{ uri: formData.imageUrl || formCtx.formData.imageUrl! }}
+                style={styles.previewImage}
+                onLoadStart={() => setIsImageLoading(true)}
+                onLoadEnd={() => setIsImageLoading(false)}
+                onError={() => setIsImageLoading(false)}
+              />
+              {isImageLoading && (
+                <View style={styles.previewOverlay}>
+                  <ActivityIndicator size="large" color="#ffffff" />
+                </View>
+              )}
+            </View>
           ) : null}
 
           <TouchableOpacity
@@ -261,6 +278,26 @@ const styles = StyleSheet.create({
     height: 180,
     borderRadius: 8,
     marginTop: 12,
+  },
+  previewWrapper: {
+    width: '100%',
+    height: 180,
+    borderRadius: 8,
+    marginTop: 12,
+    overflow: 'hidden',
+    backgroundColor: '#e0e0e0',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  previewOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0,0,0,0.4)',
   },
 });
 

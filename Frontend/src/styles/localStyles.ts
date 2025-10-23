@@ -32,7 +32,7 @@ export const localStyles = StyleSheet.create({
     marginBottom: 10,
   },
   cancelButtonDetails: {
-    marginTop: 15,
+    marginTop: 60,
     backgroundColor: "#484D50",
     padding: 12,
     borderRadius: 8,

@@ -12,7 +12,10 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { uploadImage, getUser } from "../src/utils/supabase";
+import { uploadImage, getUser, getPublicUrl } from "../src/utils/supabase";
+import { useContext } from "react";
+import { FormContext } from "../src/context/FormContext";
+import { router } from 'expo-router';
 
 export default function Camera() {
   const [facing, setFacing] = useState<CameraType>("back");
@@ -22,6 +25,7 @@ export default function Camera() {
   const [image, setImage] = useState<string | null>(null);
   const [previewVisible, setPreviewVisible] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const formCtx = useContext(FormContext);
 
   if (!permission) {
     // Camera permissions are still loading.
@@ -92,11 +96,23 @@ export default function Camera() {
         console.warn('Não foi possível obter userId:', e);
       }
       const filename = `pins/${userId}-${uuidv4()}.jpg`;
-      await uploadImage({ fileUri: image, bucket: 'images', path: filename });
+      const uploadRes = await uploadImage({ fileUri: image, bucket: 'images', path: filename });
+
+      // obter URL pública (getPublicUrl utiliza o cliente supabase)
+      const publicUrl = getPublicUrl('images', filename);
+
+      // salva no contexto do formulário para o PinFormModal ler
+      if (formCtx && formCtx.setFormData) {
+        formCtx.setFormData((prev) => ({ ...prev, imageUrl: publicUrl }));
+      }
+
       setUploading(false);
       setPreviewVisible(false);
       setImage(null);
       Alert.alert('Sucesso', 'Imagem enviada.');
+
+      // volta para o formulário (navegação)
+      router.back();
     } catch (err: any) {
       console.error('Erro upload:', err);
       setUploading(false);

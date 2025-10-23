@@ -185,7 +185,7 @@ export default function Page() {
           visible={formModalVisible}
           onClose={() => setFormModalVisible(false)}
           onSaved={(newPins) => {
-            setPins(newPins);
+            setPins((prev) => [...prev, ...newPins]);
             setFormModalVisible(false);
           }}
           formData={formData}

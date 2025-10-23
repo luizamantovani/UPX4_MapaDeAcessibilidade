@@ -5,4 +5,5 @@ export type Pin = {
   description: string;
   latitude: number;
   longitude: number;
+  imageUrl?: string | null;
 };
