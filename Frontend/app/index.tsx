@@ -46,8 +46,36 @@ export default function Page() {
     console.log("Botão Pin Esquerda Pressionado: Mostrar Pins Salvos");
   };
 
-  const handlePassosCentroPress = () => {
+  const handlePassosCentroPress = async () => {
     console.log("Botão Passos Centro Pressionado: Iniciar Ação Principal");
+    try {
+      let current = location;
+      if (!current) {
+        const { status } = await Location.requestForegroundPermissionsAsync();
+        if (status !== 'granted') {
+          console.log('Permissão de localização negada');
+          return;
+        }
+        current = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Highest });
+      }
+
+      if (!current) {
+        console.warn('Não foi possível obter localização atual');
+        return;
+      }
+
+      const { latitude, longitude } = current.coords;
+      setFormData({
+        title: "",
+        category: "",
+        description: "",
+        latitude,
+        longitude,
+      });
+      setFormModalVisible(true);
+    } catch (e) {
+      console.error('Erro ao obter localização atual:', e);
+    }
   };
 
   const handleEngrenagemDirPress = () => {
