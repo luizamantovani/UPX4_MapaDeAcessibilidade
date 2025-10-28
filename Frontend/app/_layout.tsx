@@ -39,6 +39,7 @@ export default function Layout() {
    return (
     <FormProvider>
       <Stack initialRouteName={isRegistered ? "index" : "login"}>
+        <Stack.Screen name="login" options={{ headerShown: false }} />
         <Stack.Screen name="index" options={{ title: "Mapa" }} />
         <Stack.Screen name="register" options={{ headerShown: false }} />
       </Stack>
