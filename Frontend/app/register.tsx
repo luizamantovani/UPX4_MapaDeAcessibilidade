@@ -54,8 +54,10 @@ export default function RegisterScreen() {
         Alert.alert('Erro', translateSupabaseError(error));
         return;
       }
-      // Optionally save user locally
-      await AsyncStorage.setItem('user', JSON.stringify({ name: nome, email: email }));
+  
+  const userObj: any = { name: nome, email: email };
+  if ((data as any)?.user?.id) userObj.id = (data as any).user.id;
+  await AsyncStorage.setItem('user', JSON.stringify(userObj));
       Alert.alert('Sucesso', 'Cadastro realizado! Verifique seu email para confirmar.');
       router.replace('/');
     } catch (e) {

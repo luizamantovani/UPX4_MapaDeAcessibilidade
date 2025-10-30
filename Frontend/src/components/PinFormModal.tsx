@@ -6,6 +6,9 @@ import { Picker } from '@react-native-picker/picker';
 import { useFonts, Nunito_700Bold, Nunito_600SemiBold, Nunito_300Light } from '@expo-google-fonts/nunito'; 
 import { Pin } from '../types/Pin'; 
 import { router } from 'expo-router';
+import { savePin } from '../services/api';
+import { getUser } from '../utils/supabase';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { FormContext } from '../context/FormContext';
 
 // Obtém a largura da tela para calcular a largura do modal
@@ -18,7 +21,7 @@ interface PinFormModalProps {
   formData: {
     title: string;
     category: string;
-    description: string;
+    description?: string | null;
     latitude: number;
     longitude: number;
     imageUrl?: string | null;
@@ -26,7 +29,7 @@ interface PinFormModalProps {
   setFormData: React.Dispatch<React.SetStateAction<{
     title: string;
     category: string;
-    description: string;
+    description?: string | null;
     latitude: number;
     longitude: number;
     imageUrl?: string | null;
@@ -50,23 +53,56 @@ const PinFormModal: React.FC<PinFormModalProps> = ({ visible, onClose, onSaved, 
   const [isImageLoading, setIsImageLoading] = React.useState(false);
 
   const handleSave = () => {
-    // limpa o contexto compartilhado (imagem e dados temporários)
-    if (!formData.title || !formData.category || !formData.description) {
-        Alert.alert("Erro", "Por favor, preencha todos os campos.");
-        return;
+    if (!formData.title || !formData.category) {
+      Alert.alert("Erro", "Por favor, preencha título e categoria.");
+      return;
     }
     
-  const newPin: Pin = {
-    id: Math.floor(Math.random() * 100000),
-    ...formData,
+  // monta o payload esperado pela API
+  const payload = {
+    title: formData.title,
+    category: formData.category,
+  description: formData.description ?? null,
+    latitude: formData.latitude,
+    longitude: formData.longitude,
     imageUrl: formData.imageUrl || formCtx.formData.imageUrl || null,
+    userId: null,
   };
 
-  // passa o novo pin para o parent via onSaved (parent pode atualizar lista)
-  onSaved([newPin]);
-  Alert.alert("Sucesso", "Ponto de acessibilidade salvo!");
-  if (formCtx && formCtx.resetForm) formCtx.resetForm();
-  onClose();
+  // tenta salvar no backend e atualizar o parent com os pins retornados
+  (async () => {
+    try {
+      const user = await getUser();
+      console.debug('Supabase current user:', user);
+      payload.userId = (user && (user as any).id) || null;
+    } catch (e) {
+      console.warn('Could not get current user for userId', e);
+    }
+
+    if (!payload.userId) {
+      try {
+        const stored = await AsyncStorage.getItem('user');
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          payload.userId = parsed.id || parsed.userId || parsed.sub || null;
+        }
+      } catch (e) {
+        console.warn('Could not read stored user from AsyncStorage for userId', e);
+      }
+    }
+    // tenta salvar no backend e atualizar o parent com os pins retornados
+    try {
+  console.debug('Saving pin payload:', payload);
+  const pinsFromServer = await savePin(payload as any);
+      onSaved(pinsFromServer);
+      Alert.alert("Sucesso", "Ponto de acessibilidade salvo!");
+      if (formCtx && formCtx.resetForm) formCtx.resetForm();
+      onClose();
+    } catch (err) {
+      console.error('Erro ao salvar pin:', err);
+      Alert.alert('Erro', 'Não foi possível salvar o ponto. Tente novamente.');
+    }
+  })();
   };
 
   if (!fontsLoaded) return null;
@@ -115,7 +151,7 @@ const PinFormModal: React.FC<PinFormModalProps> = ({ visible, onClose, onSaved, 
           <TextInput
             style={[styles.input, styles.textArea]}
             onChangeText={(text) => setFormData({ ...formData, description: text })}
-            value={formData.description}
+            value={formData.description ?? ''}
             multiline
             numberOfLines={4}
           />
@@ -144,7 +180,7 @@ const PinFormModal: React.FC<PinFormModalProps> = ({ visible, onClose, onSaved, 
               formCtx.setFormData({
                 title: formData.title,
                 category: formData.category,
-                description: formData.description,
+                description: formData.description ?? '',
                 latitude: formData.latitude,
                 longitude: formData.longitude,
               });

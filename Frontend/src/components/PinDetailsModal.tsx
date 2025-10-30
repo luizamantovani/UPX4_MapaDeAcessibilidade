@@ -12,8 +12,8 @@ type Props = {
 };
 
 export default function PinDetailsModal({ pin, visible, onClose }: Props) {
-  if (!pin) return null;
   const [isImageLoading, setIsImageLoading] = React.useState(false);
+  if (!pin) return null;
 
   return (
     <Modal visible={visible} animationType="slide" transparent onRequestClose={onClose}>

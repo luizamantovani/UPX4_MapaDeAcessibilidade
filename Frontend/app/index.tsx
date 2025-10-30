@@ -88,7 +88,13 @@ export default function Page() {
   const [formModalVisible, setFormModalVisible] = useState(false);
   const [detailsModalVisible, setDetailsModalVisible] = useState(false);
   const [selectedPin, setSelectedPin] = useState<Pin | null>(null);
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<{
+    title: string;
+    category: string;
+    description?: string | null;
+    latitude: number;
+    longitude: number;
+  }>({
     title: "",
     category: "",
     description: "",
@@ -213,7 +219,8 @@ export default function Page() {
           visible={formModalVisible}
           onClose={() => setFormModalVisible(false)}
           onSaved={(newPins) => {
-            setPins((prev) => [...prev, ...newPins]);
+            // substitui a lista local pela lista retornada pelo servidor para evitar duplicação
+            setPins(newPins);
             setFormModalVisible(false);
           }}
           formData={formData}

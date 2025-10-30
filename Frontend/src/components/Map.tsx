@@ -41,7 +41,7 @@ export default function Map({ pins, onMapPress, onMarkerPress, userLocation }: M
           key={pin.id}
           coordinate={{ latitude: pin.latitude, longitude: pin.longitude }}
           title={pin.title}
-          description={pin.description}
+          description={pin.description ?? undefined}
           pinColor={
             pin.category === "acessivel"
               ? "green"

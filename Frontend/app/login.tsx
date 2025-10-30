@@ -2,17 +2,9 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import { createClient } from '@supabase/supabase-js';
+import { supabase } from '../src/utils/supabase';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import translateSupabaseError from '../src/utils/translateSupabaseError';
-
-const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL!;
-const supabaseKey = process.env.EXPO_PUBLIC_SUPABASE_KEY!;
-
-if (!supabaseUrl || !supabaseKey) {
-  console.error('❌ Variáveis de ambiente não encontradas. Verifique seu arquivo .env');
-}
-
-export const supabase = createClient(supabaseUrl, supabaseKey);
 
 export default function LoginScreen() {
   const router = useRouter();
@@ -25,21 +17,31 @@ export default function LoginScreen() {
       Alert.alert('Erro', 'Preencha todos os campos.');
       return;
     }
-    try {
-      const { error, data } = await supabase.auth.signInWithPassword({
-        email: email,
-        password: senha,
-      });
-      if (error) {
-        Alert.alert('Erro', translateSupabaseError(error));
-        return;
+      try {
+        const { error, data } = await supabase.auth.signInWithPassword({
+          email: email,
+          password: senha,
+        });
+        if (error) {
+          Alert.alert('Erro', translateSupabaseError(error));
+          return;
+        }
+
+        try {
+          const user = (data as any)?.user || (data as any)?.data?.user || null;
+          if (user && user.id) {
+            await AsyncStorage.setItem('user', JSON.stringify({ id: user.id, email }));
+          }
+        } catch (e) {
+          console.warn('Could not persist user locally after login', e);
+        }
+
+        Alert.alert('Sucesso', 'Login realizado!');
+        router.replace('/');
+      } catch (e) {
+        Alert.alert('Erro', 'Falha ao realizar o login. Tente novamente.');
+        console.error(e);
       }
-      Alert.alert('Sucesso', 'Login realizado!');
-      router.replace('/');
-    } catch (e) {
-      Alert.alert('Erro', 'Falha ao realizar o login. Tente novamente.');
-      console.error(e);
-    }
   };
 
   return (
