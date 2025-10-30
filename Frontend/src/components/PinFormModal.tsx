@@ -1,7 +1,7 @@
 // src/components/PinFormModal.tsx
 
 import React, { useContext } from 'react';
-import { View, Text, Modal, TextInput, TouchableOpacity, StyleSheet, Alert, Dimensions, Image, ActivityIndicator } from 'react-native'; // 👈 Importa Dimensions
+import { View, Text, Modal, TextInput, TouchableOpacity, StyleSheet, Dimensions, Image, ActivityIndicator } from 'react-native'; // 👈 Importa Dimensions
 import { Picker } from '@react-native-picker/picker'; 
 import { useFonts, Nunito_700Bold, Nunito_600SemiBold, Nunito_300Light } from '@expo-google-fonts/nunito'; 
 import { Pin } from '../types/Pin'; 
@@ -10,6 +10,7 @@ import { savePin } from '../services/api';
 import { getUser } from '../utils/supabase';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { FormContext } from '../context/FormContext';
+import AlertBox from './AlertBox';
 
 // Obtém a largura da tela para calcular a largura do modal
 const { width } = Dimensions.get('window');
@@ -51,10 +52,31 @@ const PinFormModal: React.FC<PinFormModalProps> = ({ visible, onClose, onSaved, 
 
   const formCtx = useContext(FormContext);
   const [isImageLoading, setIsImageLoading] = React.useState(false);
+  // estado para alert personalizado
+  const [alertVisible, setAlertVisible] = React.useState(false);
+  const [alertTitle, setAlertTitle] = React.useState<string | undefined>(undefined);
+  const [alertMessage, setAlertMessage] = React.useState<string | undefined>(undefined);
+  const [alertType, setAlertType] = React.useState<'info'|'success'|'error'>('info');
+
+  const showAlert = (title?: string, message?: string, type: 'info'|'success'|'error' = 'info') => {
+    setAlertTitle(title);
+    setAlertMessage(message);
+    setAlertType(type);
+    setAlertVisible(true);
+  };
+
+  const handleAlertClose = () => {
+    setAlertVisible(false);
+    // Se for sucesso, resetar o form e fechar o modal pai
+    if (alertType === 'success') {
+      if (formCtx && formCtx.resetForm) formCtx.resetForm();
+      onClose();
+    }
+  };
 
   const handleSave = () => {
     if (!formData.title || !formData.category) {
-      Alert.alert("Erro", "Por favor, preencha título e categoria.");
+      showAlert('Erro', 'Por favor, preencha título e categoria.', 'error');
       return;
     }
     
@@ -94,13 +116,11 @@ const PinFormModal: React.FC<PinFormModalProps> = ({ visible, onClose, onSaved, 
     try {
   console.debug('Saving pin payload:', payload);
   const pinsFromServer = await savePin(payload as any);
-      onSaved(pinsFromServer);
-      Alert.alert("Sucesso", "Ponto de acessibilidade salvo!");
-      if (formCtx && formCtx.resetForm) formCtx.resetForm();
-      onClose();
+  onSaved(pinsFromServer);
+  showAlert('Sucesso', 'Ponto de acessibilidade salvo!', 'success');
     } catch (err) {
       console.error('Erro ao salvar pin:', err);
-      Alert.alert('Erro', 'Não foi possível salvar o ponto. Tente novamente.');
+      showAlert('Erro', 'Não foi possível salvar o ponto. Tente novamente.', 'error');
     }
   })();
   };
@@ -200,6 +220,13 @@ const PinFormModal: React.FC<PinFormModalProps> = ({ visible, onClose, onSaved, 
           </TouchableOpacity>
         </View>
       </View>
+      <AlertBox
+        visible={alertVisible}
+        title={alertTitle}
+        message={alertMessage}
+        type={alertType}
+        onClose={handleAlertClose}
+      />
     </Modal>
   );
 };

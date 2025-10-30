@@ -1,12 +1,13 @@
 // register.tsx
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Image, Alert } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useFonts, Nunito_700Bold, Nunito_600SemiBold, Nunito_300Light } from '@expo-google-fonts/nunito';
 import { useRouter } from 'expo-router'; 
 import AsyncStorage from '@react-native-async-storage/async-storage'; 
 import { createClient } from '@supabase/supabase-js';
 import translateSupabaseError from '../src/utils/translateSupabaseError';
+import AlertBox from '../src/components/AlertBox';
 
 const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL!;
 const supabaseKey = process.env.EXPO_PUBLIC_SUPABASE_KEY!;
@@ -31,13 +32,33 @@ export default function RegisterScreen() {
     Nunito_300Light,
   });
 
+  // alert personalizado
+  const [alertVisible, setAlertVisible] = useState(false);
+  const [alertTitle, setAlertTitle] = useState<string | undefined>(undefined);
+  const [alertMessage, setAlertMessage] = useState<string | undefined>(undefined);
+  const [alertType, setAlertType] = useState<'info'|'success'|'error'>('info');
+
+  const showAlert = (title?: string, message?: string, type: 'info'|'success'|'error' = 'info') => {
+    setAlertTitle(title);
+    setAlertMessage(message);
+    setAlertType(type);
+    setAlertVisible(true);
+  };
+
+  const handleAlertClose = () => {
+    setAlertVisible(false);
+    if (alertType === 'success') {
+      router.replace('/');
+    }
+  };
+
   const handleRegister = async () => {
     if (!nome || !email || !senha || !confirmarSenha) {
-      Alert.alert('Erro', 'Preencha todos os campos.');
+      showAlert('Erro', 'Preencha todos os campos.', 'error');
       return;
     }
     if (senha !== confirmarSenha) {
-      Alert.alert('Erro', 'As senhas não coincidem.');
+      showAlert('Erro', 'As senhas não coincidem.', 'error');
       return;
     }
 
@@ -51,17 +72,16 @@ export default function RegisterScreen() {
         }
       });
       if (error) {
-        Alert.alert('Erro', translateSupabaseError(error));
+        showAlert('Erro', translateSupabaseError(error), 'error');
         return;
       }
   
   const userObj: any = { name: nome, email: email };
   if ((data as any)?.user?.id) userObj.id = (data as any).user.id;
   await AsyncStorage.setItem('user', JSON.stringify(userObj));
-      Alert.alert('Sucesso', 'Cadastro realizado! Verifique seu email para confirmar.');
-      router.replace('/');
+      showAlert('Sucesso', 'Cadastro realizado! Verifique seu email para confirmar.', 'success');
     } catch (e) {
-      Alert.alert('Erro', 'Falha ao realizar o cadastro. Tente novamente.');
+      showAlert('Erro', 'Falha ao realizar o cadastro. Tente novamente.', 'error');
       console.error(e);
     }
   };
@@ -128,6 +148,7 @@ export default function RegisterScreen() {
           Já tem uma conta? Faça login
         </Text>
       </View>
+      <AlertBox visible={alertVisible} title={alertTitle} message={alertMessage} type={alertType} onClose={handleAlertClose} />
     </ScrollView>
   );
 }

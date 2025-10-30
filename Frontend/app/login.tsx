@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { supabase } from '../src/utils/supabase';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import translateSupabaseError from '../src/utils/translateSupabaseError';
+import AlertBox from '../src/components/AlertBox';
 
 export default function LoginScreen() {
   const router = useRouter();
@@ -12,9 +13,28 @@ export default function LoginScreen() {
   const [senha, setSenha] = useState('');
   const [senhaVisivel, setSenhaVisivel] = useState(false);
 
+  const [alertVisible, setAlertVisible] = useState(false);
+  const [alertTitle, setAlertTitle] = useState<string | undefined>(undefined);
+  const [alertMessage, setAlertMessage] = useState<string | undefined>(undefined);
+  const [alertType, setAlertType] = useState<'info'|'success'|'error'>('info');
+
+  const showAlert = (title?: string, message?: string, type: 'info'|'success'|'error' = 'info') => {
+    setAlertTitle(title);
+    setAlertMessage(message);
+    setAlertType(type);
+    setAlertVisible(true);
+  };
+
+  const handleAlertClose = () => {
+    setAlertVisible(false);
+    if (alertType === 'success') {
+      router.replace('/');
+    }
+  };
+
   const handleLogin = async () => {
     if (!email || !senha) {
-      Alert.alert('Erro', 'Preencha todos os campos.');
+      showAlert('Erro', 'Preencha todos os campos.', 'error');
       return;
     }
       try {
@@ -23,7 +43,7 @@ export default function LoginScreen() {
           password: senha,
         });
         if (error) {
-          Alert.alert('Erro', translateSupabaseError(error));
+            showAlert('Erro', translateSupabaseError(error), 'error');
           return;
         }
 
@@ -36,10 +56,9 @@ export default function LoginScreen() {
           console.warn('Could not persist user locally after login', e);
         }
 
-        Alert.alert('Sucesso', 'Login realizado!');
-        router.replace('/');
+        showAlert('Sucesso', 'Login realizado!', 'success');
       } catch (e) {
-        Alert.alert('Erro', 'Falha ao realizar o login. Tente novamente.');
+        showAlert('Erro', 'Falha ao realizar o login. Tente novamente.', 'error');
         console.error(e);
       }
   };
@@ -79,6 +98,7 @@ export default function LoginScreen() {
       <TouchableOpacity style={styles.linkCadastro} onPress={() => router.push('/register')}>
         <Text style={styles.textoLinkCadastro}>Não tem uma conta? Cadastre-se</Text>
       </TouchableOpacity>
+      <AlertBox visible={alertVisible} title={alertTitle} message={alertMessage} type={alertType} onClose={handleAlertClose} />
     </View>
   );
 }

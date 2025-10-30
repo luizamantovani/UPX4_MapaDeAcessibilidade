@@ -1,7 +1,6 @@
 import { CameraView, CameraType, useCameraPermissions } from "expo-camera";
-import { useState, useRef } from "react";
+import React, { useState, useRef, useContext } from "react";
 import {
-  Alert,
   ActivityIndicator,
   Button,
   Image,
@@ -13,9 +12,9 @@ import {
   View,
 } from "react-native";
 import { uploadImage, getUser, getPublicUrl } from "../src/utils/supabase";
-import { useContext } from "react";
 import { FormContext } from "../src/context/FormContext";
 import { router } from 'expo-router';
+import AlertBox from '../src/components/AlertBox';
 
 export default function Camera() {
   const [facing, setFacing] = useState<CameraType>("back");
@@ -26,6 +25,23 @@ export default function Camera() {
   const [previewVisible, setPreviewVisible] = useState(false);
   const [uploading, setUploading] = useState(false);
   const formCtx = useContext(FormContext);
+
+  const [alertVisible, setAlertVisible] = useState(false);
+  const [alertTitle, setAlertTitle] = useState<string | undefined>(undefined);
+  const [alertMessage, setAlertMessage] = useState<string | undefined>(undefined);
+  const [alertType, setAlertType] = useState<'info'|'success'|'error'>('info');
+
+  const showAlert = (title?: string, message?: string, type: 'info'|'success'|'error' = 'info') => {
+    setAlertTitle(title);
+    setAlertMessage(message);
+    setAlertType(type);
+    setAlertVisible(true);
+  };
+
+  const handleAlertClose = () => {
+    setAlertVisible(false);
+    if (alertType === 'success') router.back();
+  };
 
   if (!permission) {
     // Camera permissions are still loading.
@@ -96,7 +112,7 @@ export default function Camera() {
         console.warn('Não foi possível obter userId:', e);
       }
       const filename = `pins/${userId}-${uuidv4()}.jpg`;
-      const uploadRes = await uploadImage({ fileUri: image, bucket: 'images', path: filename });
+  await uploadImage({ fileUri: image, bucket: 'images', path: filename });
 
       // obter URL pública (getPublicUrl utiliza o cliente supabase)
       const publicUrl = getPublicUrl('images', filename);
@@ -109,14 +125,11 @@ export default function Camera() {
       setUploading(false);
       setPreviewVisible(false);
       setImage(null);
-      Alert.alert('Sucesso', 'Imagem enviada.');
-
-      // volta para o formulário (navegação)
-      router.back();
+  showAlert('Sucesso', 'Imagem enviada.', 'success');
     } catch (err: any) {
       console.error('Erro upload:', err);
       setUploading(false);
-      Alert.alert('Erro', err?.message || 'Falha ao enviar imagem');
+      showAlert('Erro', err?.message || 'Falha ao enviar imagem', 'error');
     }
   };
 
@@ -193,7 +206,8 @@ export default function Camera() {
           <Text style={styles.text}>Tirar foto</Text>
         </TouchableOpacity>
       </View>
-      {renderPreviewModal()}
+  {renderPreviewModal()}
+  <AlertBox visible={alertVisible} title={alertTitle} message={alertMessage} type={alertType} onClose={handleAlertClose} />
 
     </View>
   );
