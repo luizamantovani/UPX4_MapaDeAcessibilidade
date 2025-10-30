@@ -34,9 +34,9 @@ export async function create(req: Request, res: Response) {
   }
   pino.debug({req: {method: req.method, url: req.url}, body: req.body}, "Creating pin with data"); // Loga os dados recebidos
 
-  const { title, category, latitude, longitude, description } = result.data;
+  const { title, category, latitude, longitude, description, imageUrl, userId } = result.data;
 
-  const newPin = await service.create({ title, description: description ?? null, category, latitude, longitude }); // Cria o pin no banco
+  const newPin = await service.create({ title, description: description ?? null, category, latitude, longitude, imageUrl: imageUrl ?? null, userId: userId ?? null }); // Cria o pin no banco
 
   pino.info({req: {method: req.method, url: req.url}, result: newPin}, "Created new pin"); // Loga a operação
   res.status(201).json(newPin);               // Retorna o novo pin criado
@@ -54,9 +54,9 @@ export async function update(req: Request, res: Response) {
 
   const id = Number(req.params.id);           // Extrai o ID da URL
 
-  const { title, category, latitude, longitude, description } = result.data;
+  const { title, category, latitude, longitude, description, imageUrl, userId } = result.data;
 
-  const updatedPin = await service.update(id, { title, description: description ?? null, category, latitude, longitude }); // Atualiza o pin
+  const updatedPin = await service.update(id, { title, description: description ?? null, category, latitude, longitude, imageUrl: imageUrl ?? null, userId: userId ?? null }); // Atualiza o pin
 
   pino.info({req: {method: req.method, url: req.url}, result: updatedPin}, "Updated pin"); // Loga a operação
   if (!updatedPin) {

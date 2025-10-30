@@ -6,4 +6,6 @@ export const pinSchema = z.object({
   category: z.enum(["acessivel", "nao_acessivel"]),
   latitude: z.number(),
   longitude: z.number(),
+  imageUrl: z.string().optional().nullable(),
+  userId: z.string().optional().nullable(),
 });

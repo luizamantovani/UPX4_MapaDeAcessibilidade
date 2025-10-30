@@ -13,12 +13,10 @@ export const pins = pgTable(
   "pins", 
   {
   id: serial("id").primaryKey(),
-  // userId: serial("user_id")
-  //   .notNull()
-  //   .references(() => users.id, { onDelete: "cascade" }),
-
   title: text("title").notNull(),
   description: text("description"),
+  imageUrl: text("image_url"),
+  userId: text("user_id"),
   category: text("category").notNull(),
 
   location: geometry('location', { type: 'point', mode: 'xy', srid: 4326 }).notNull(),

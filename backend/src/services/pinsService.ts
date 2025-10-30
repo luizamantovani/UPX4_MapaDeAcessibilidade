@@ -9,6 +9,8 @@ type PinBase = {
   title: string;
   description: string | null;
   category: string;
+  imageUrl?: string | null;
+  userId?: string | null;
   latitude: number;
   longitude: number;
 };
@@ -17,6 +19,8 @@ type PinBase = {
 const selectShape = {
   id: pins.id,
   // userId: pins.userId,
+  imageUrl: pins.imageUrl,
+  userId: pins.userId,
   title: pins.title,
   description: pins.description,
   category: pins.category,
@@ -50,7 +54,8 @@ export async function create(data: PinBase) {
   const [pin] = await db
     .insert(pins)
     .values({
-      // userId,
+      userId: data.userId ?? null,
+      imageUrl: data.imageUrl ?? null,
       title,
       description: description ?? null,
       category,
@@ -67,7 +72,8 @@ export async function update(id: number, data: PinBase) {
   const [pin] = await db
     .update(pins)
     .set({
-      // userId,
+      userId: data.userId ?? null,
+      imageUrl: data.imageUrl ?? null,
       title,
       description,
       category,
