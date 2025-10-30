@@ -8,6 +8,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createClient } from '@supabase/supabase-js';
 import translateSupabaseError from '../src/utils/translateSupabaseError';
 import AlertBox from '../src/components/AlertBox';
+import { theme } from '../src/styles/theme';
 
 const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL!;
 const supabaseKey = process.env.EXPO_PUBLIC_SUPABASE_KEY!;
@@ -158,8 +159,8 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#00A9F4', 
-    paddingVertical: 10, 
+    backgroundColor: theme.colors.primary,
+    paddingVertical: theme.spacing.lg,
   },
   logo: {
     width: 600, 
@@ -169,9 +170,9 @@ const styles = StyleSheet.create({
     marginTop: -170,
   },
   card: {
-    backgroundColor: '#fff',
-    borderRadius: 12,
-    padding: 20,
+    backgroundColor: theme.colors.background,
+    borderRadius: theme.radii.lg,
+    padding: theme.spacing.lg,
     width: '85%',
     shadowColor: '#000',
     shadowOpacity: 0.1,
@@ -179,46 +180,45 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   label: {
-    fontSize: 14,
-
-    fontFamily: 'Nunito_700Bold', 
-    marginBottom: 6,
-    marginTop: 10,
+    fontSize: theme.fontSizes.md,
+    fontFamily: theme.fonts.bold,
+    marginBottom: theme.spacing.sm,
+    marginTop: theme.spacing.sm,
   },
   input: {
-    backgroundColor: '#F0F0F0',
-    borderRadius: 8,
-    padding: 10,
-    fontFamily: 'Nunito_300Light',
-    marginBottom: 5, // Pequeno ajuste para espaçamento
+    backgroundColor: theme.colors.surface,
+    borderRadius: theme.radii.md,
+    padding: theme.spacing.md,
+    fontFamily: theme.fonts.regular,
+    marginBottom: theme.spacing.sm,
   },
   senhaContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#F0F0F0',
-    borderRadius: 8,
-    paddingHorizontal: 10,
-    marginBottom: 5, // Pequeno ajuste para espaçamento
+    backgroundColor: theme.colors.surface,
+    borderRadius: theme.radii.md,
+    paddingHorizontal: theme.spacing.md,
+    marginBottom: theme.spacing.sm,
   },
   inputSenha: {
     flex: 1,
-    paddingVertical: 10,
-    fontFamily: 'Nunito_300Light',
+    paddingVertical: theme.spacing.sm,
+    fontFamily: theme.fonts.regular,
   },
   botao: {
-    backgroundColor: '#00A9F4', 
-    borderRadius: 8,
-    paddingVertical: 14,
+    backgroundColor: theme.colors.primary,
+    borderRadius: theme.radii.md,
+    paddingVertical: theme.spacing.md,
     alignItems: 'center',
-    marginTop: 20,
+    marginTop: theme.spacing.lg,
   },
   textoBotao: {
     color: '#fff',
-    fontSize: 16,
-    fontFamily: 'Nunito_600SemiBold',
+    fontSize: theme.fontSizes.lg,
+    fontFamily: theme.fonts.semibold,
   },
   textoLinkCadastro: {
-    color: '#00A9F4',
-    marginTop: 18,
+    color: theme.colors.primary,
+    marginTop: theme.spacing.lg,
   },
 });

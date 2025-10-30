@@ -1,20 +1,23 @@
 import { StyleSheet } from "react-native";
+import { theme } from './theme';
 
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: 40,
+    paddingTop: theme.spacing.xl,
+    backgroundColor: theme.colors.background,
   },
   title: {
-    fontSize: 24,
+    fontSize: theme.fontSizes.xl,
     textAlign: "center",
     justifyContent: "center",
-    marginBottom: 20,
+    marginBottom: theme.spacing.lg,
+    fontFamily: theme.fonts.bold,
   },
   description: {
-    fontSize: 16,
+    fontSize: theme.fontSizes.md,
     textAlign: "center",
-    marginBottom: 10,
+    marginBottom: theme.spacing.md,
   },
   map: {
     flex: 1,
@@ -24,8 +27,8 @@ export const styles = StyleSheet.create({
   input: {
     borderWidth: 1,
     borderColor: "#ccc",
-    borderRadius: 8,
-    marginBottom: 10,
-    backgroundColor: "#fff",
+    borderRadius: theme.radii.md,
+    marginBottom: theme.spacing.md,
+    backgroundColor: theme.colors.background,
   },
 });

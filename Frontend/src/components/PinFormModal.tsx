@@ -11,6 +11,7 @@ import { getUser } from '../utils/supabase';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { FormContext } from '../context/FormContext';
 import AlertBox from './AlertBox';
+import { theme } from '../styles/theme';
 
 // Obtém a largura da tela para calcular a largura do modal
 const { width } = Dimensions.get('window');
@@ -236,13 +237,13 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: 'rgba(0,0,0,0.5)',
+    backgroundColor: theme.colors.overlay,
   },
   modalView: {
     margin: 20,
-    backgroundColor: "white",
-    borderRadius: 20,
-    padding: 35,
+    backgroundColor: theme.colors.background,
+    borderRadius: theme.radii.lg,
+    padding: theme.spacing.lg,
     alignItems: "stretch",
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
@@ -254,99 +255,99 @@ const styles = StyleSheet.create({
     // minWidth: 300, // Opcional: Garante uma largura mínima
   },
   modalTitle: {
-    fontSize: 18,
-    fontFamily: 'Nunito_700Bold', 
+    fontSize: theme.fontSizes.xl,
+    fontFamily: theme.fonts.bold,
     textAlign: 'center',
-    marginBottom: 20,
+    marginBottom: theme.spacing.md,
   },
   label: {
-    fontFamily: 'Nunito_600SemiBold', 
-    fontSize: 14,
-    marginTop: 10,
-    marginBottom: 5,
+    fontFamily: theme.fonts.semibold,
+    fontSize: theme.fontSizes.md,
+    marginTop: theme.spacing.sm,
+    marginBottom: theme.spacing.sm,
   },
   labelBold: {
-    fontFamily: 'Nunito_700Bold', 
-    fontSize: 14,
-    marginTop: 10,
-    marginBottom: 5,
+    fontFamily: theme.fonts.bold,
+    fontSize: theme.fontSizes.md,
+    marginTop: theme.spacing.sm,
+    marginBottom: theme.spacing.sm,
   },
   input: {
-    backgroundColor: '#F0F0F0',
-    borderRadius: 8,
-    padding: 10,
-    fontFamily: 'Nunito_600SemiBold',
-    marginBottom: 10,
+    backgroundColor: theme.colors.surface,
+    borderRadius: theme.radii.md,
+    padding: theme.spacing.md,
+    fontFamily: theme.fonts.semibold,
+    marginBottom: theme.spacing.md,
   },
   textArea: {
     height: 100,
     textAlignVertical: 'top',
   },
   pickerContainer: {
-    backgroundColor: '#F0F0F0',
-    borderRadius: 8,
-    marginBottom: 10,
+    backgroundColor: theme.colors.surface,
+    borderRadius: theme.radii.md,
+    marginBottom: theme.spacing.sm,
     borderWidth: 1,
     borderColor: '#ccc',
   },
   // 🚀 ESTILO DO PICKER (principalmente para Android, pode ter efeito no texto)
   picker: {
-    fontFamily: 'Nunito_600SemiBold', // Tenta aplicar a fonte aqui
+    fontFamily: theme.fonts.semibold as any, // Tenta aplicar a fonte aqui
     height: 50,
   },
   // 🚀 ESTILO DO ITEM DO PICKER (específico para iOS, mas boa prática)
   pickerItem: {
-    fontFamily: 'Nunito_600SemiBold', // Aplica a fonte de subtítulo aos itens
-    fontSize: 14, // Define um tamanho de fonte para os itens
-    color: '#333', // Cor do texto dos itens
+    fontFamily: theme.fonts.semibold as any, // Aplica a fonte de subtítulo aos itens
+    fontSize: theme.fontSizes.md, // Define um tamanho de fonte para os itens
+    color: theme.colors.text, // Cor do texto dos itens
   },
   cameraButton: {
-    backgroundColor: '#7f8881ff',
-    borderRadius: 8,
-    padding: 14,
+    backgroundColor: theme.colors.muted,
+    borderRadius: theme.radii.md,
+    padding: theme.spacing.lg,
     alignItems: 'center',
-    marginTop: 15,
+    marginTop: theme.spacing.md,
   },
   cameraButtonText: {
     color: 'white',
-    fontFamily: 'Nunito_700Bold',
-    fontSize: 16,
+    fontFamily: theme.fonts.bold,
+    fontSize: theme.fontSizes.lg,
   },
   saveButton: {
-    backgroundColor: '#00A9F4',
-    borderRadius: 8,
-    padding: 14,
+    backgroundColor: theme.colors.primary,
+    borderRadius: theme.radii.md,
+    padding: theme.spacing.lg,
     alignItems: 'center',
-    marginTop: 15,
+    marginTop: theme.spacing.md,
   },
   saveButtonText: {
     color: 'white',
-    fontFamily: 'Nunito_700Bold',
-    fontSize: 16,
+    fontFamily: theme.fonts.bold,
+    fontSize: theme.fontSizes.lg,
   },
   cancelButton: {
-    backgroundColor: 'red',
-    borderRadius: 8,
-    padding: 14,
+    backgroundColor: theme.colors.danger,
+    borderRadius: theme.radii.md,
+    padding: theme.spacing.lg,
     alignItems: 'center',
-    marginTop: 10,
+    marginTop: theme.spacing.sm,
   },
   cancelButtonText: {
     color: 'white',
-    fontFamily: 'Nunito_700Bold',
-    fontSize: 16,
+    fontFamily: theme.fonts.bold,
+    fontSize: theme.fontSizes.lg,
   },
   previewImage: {
     width: '100%',
     height: 180,
-    borderRadius: 8,
-    marginTop: 12,
+    borderRadius: theme.radii.md,
+    marginTop: theme.spacing.md,
   },
   previewWrapper: {
     width: '100%',
     height: 180,
-    borderRadius: 8,
-    marginTop: 12,
+    borderRadius: theme.radii.md,
+    marginTop: theme.spacing.md,
     overflow: 'hidden',
     backgroundColor: '#e0e0e0',
     justifyContent: 'center',

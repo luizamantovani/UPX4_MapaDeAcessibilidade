@@ -15,6 +15,7 @@ import { uploadImage, getUser, getPublicUrl } from "../src/utils/supabase";
 import { FormContext } from "../src/context/FormContext";
 import { router } from 'expo-router';
 import AlertBox from '../src/components/AlertBox';
+import { theme } from '../src/styles/theme';
 
 export default function Camera() {
   const [facing, setFacing] = useState<CameraType>("back");
@@ -161,7 +162,7 @@ export default function Camera() {
 
           <View style={styles.modalButtons}>
             <TouchableOpacity
-              style={[styles.modalButton, { backgroundColor: '#4caf50' }]}
+              style={[styles.modalButton, { backgroundColor: theme.colors.success }]}
               onPress={handleSend}
               disabled={uploading}
             >
@@ -173,14 +174,14 @@ export default function Camera() {
             </TouchableOpacity>
 
             <TouchableOpacity
-              style={[styles.modalButton, { backgroundColor: '#2196f3' }]}
+              style={[styles.modalButton, { backgroundColor: theme.colors.accent }]}
               onPress={handleRepeat}
             >
               <Text style={styles.text}>Repetir</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
-              style={[styles.modalButton, { backgroundColor: '#f44336' }]}
+              style={[styles.modalButton, { backgroundColor: theme.colors.danger }]}
               onPress={handleCancel}
             >
               <Text style={styles.text}>Cancelar</Text>
@@ -217,8 +218,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: "center",
-    backgroundColor: "#ffffffff",
-    opacity: 0.8,
+    backgroundColor: theme.colors.background,
+    opacity: 1,
     overflow: "hidden", // garante que as bordas arredondadas cortem o conteúdo interno
   },
   message: {
@@ -265,24 +266,24 @@ const styles = StyleSheet.create({
   },
   modalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.6)',
+    backgroundColor: theme.colors.overlay,
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 16,
+    padding: theme.spacing.md,
   },
   modalContent: {
     width: '100%',
     maxWidth: 520,
-    backgroundColor: '#ffffff',
-    borderRadius: 12,
-    padding: 12,
+    backgroundColor: theme.colors.background,
+    borderRadius: theme.radii.lg,
+    padding: theme.spacing.md,
     alignItems: 'center',
   },
   previewImage: {
     width: '100%',
     height: 360,
-    borderRadius: 8,
-    marginBottom: 12,
+    borderRadius: theme.radii.md,
+    marginBottom: theme.spacing.md,
   },
   modalButtons: {
     flexDirection: 'row',
@@ -291,9 +292,9 @@ const styles = StyleSheet.create({
   },
   modalButton: {
     flex: 1,
-    marginHorizontal: 6,
-    paddingVertical: 10,
-    borderRadius: 8,
+    marginHorizontal: theme.spacing.sm,
+    paddingVertical: theme.spacing.sm,
+    borderRadius: theme.radii.md,
     alignItems: 'center',
   },
 });

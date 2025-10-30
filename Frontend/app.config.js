@@ -56,13 +56,11 @@ const config = {
 
     extra: {
       router: {},
-      eas: {
-        projectId: "f4d92aef-e419-40f0-97ab-f89eed30d4ee",
-      },
-      API_URL: process.env.API_URL
+      API_URL: process.env.API_URL,
+      "eas": {
+        "projectId": "a2f0dede-4448-4e57-a411-4e687f043229"
+      }
     },
-
-    owner: "luizamantovani",
   },
 };
 

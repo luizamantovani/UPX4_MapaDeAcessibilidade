@@ -1,5 +1,6 @@
 import React from 'react';
 import { Modal, View, Text, TouchableOpacity, StyleSheet, Animated } from 'react-native';
+import { theme } from '../styles/theme';
 
 type AlertType = 'info' | 'success' | 'error';
 
@@ -12,7 +13,7 @@ interface AlertBoxProps {
 }
 
 const AlertBox: React.FC<AlertBoxProps> = ({ visible, title, message, type = 'info', onClose }) => {
-  const bgColor = type === 'error' ? '#ff6b6b' : type === 'success' ? '#4caf50' : '#2196f3';
+  const bgColor = type === 'error' ? theme.colors.danger : type === 'success' ? theme.colors.success : theme.colors.accent;
   const scale = React.useRef(new Animated.Value(0.8)).current;
 
   React.useEffect(() => {
@@ -47,14 +48,14 @@ const AlertBox: React.FC<AlertBoxProps> = ({ visible, title, message, type = 'in
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.4)',
+    backgroundColor: theme.colors.overlay,
     justifyContent: 'center',
     alignItems: 'center',
   },
   container: {
     width: '85%',
-    backgroundColor: '#fff',
-    borderRadius: 12,
+    backgroundColor: theme.colors.background,
+    borderRadius: theme.radii.lg,
     overflow: 'hidden',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
@@ -63,38 +64,40 @@ const styles = StyleSheet.create({
     elevation: 6,
   },
   header: {
-    paddingVertical: 12,
-    paddingHorizontal: 16,
+    paddingVertical: theme.spacing.sm,
+    paddingHorizontal: theme.spacing.md,
   },
   headerText: {
     color: 'white',
     fontWeight: '700',
     textAlign: 'center',
-    fontSize: 16,
+    fontSize: theme.fontSizes.lg,
+    fontFamily: theme.fonts.bold,
   },
   body: {
-    padding: 18,
+    padding: theme.spacing.lg,
   },
   message: {
-    fontSize: 14,
-    color: '#222',
+    fontSize: theme.fontSizes.md,
+    color: theme.colors.text,
     textAlign: 'center',
   },
   footer: {
-    padding: 12,
+    padding: theme.spacing.sm,
     borderTopWidth: 1,
     borderTopColor: '#eee',
     alignItems: 'center',
   },
   button: {
-    backgroundColor: '#111',
-    paddingVertical: 10,
-    paddingHorizontal: 28,
-    borderRadius: 8,
+    backgroundColor: theme.colors.text,
+    paddingVertical: theme.spacing.sm,
+    paddingHorizontal: theme.spacing.lg,
+    borderRadius: theme.radii.md,
   },
   buttonText: {
     color: 'white',
     fontWeight: '600',
+    fontFamily: theme.fonts.semibold,
   },
 });
 

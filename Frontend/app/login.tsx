@@ -6,6 +6,7 @@ import { supabase } from '../src/utils/supabase';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import translateSupabaseError from '../src/utils/translateSupabaseError';
 import AlertBox from '../src/components/AlertBox';
+import { theme } from '../src/styles/theme';
 
 export default function LoginScreen() {
   const router = useRouter();
@@ -108,55 +109,56 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#00A9F4',
-    paddingVertical: 10,
+    backgroundColor: theme.colors.primary,
+    paddingVertical: theme.spacing.lg,
   },
   title: {
     fontSize: 24,
-    fontWeight: 'bold',
+    fontFamily: theme.fonts.bold,
     color: '#fff',
-    marginBottom: 30,
+    marginBottom: theme.spacing.lg,
   },
   inputGroup: {
     width: '85%',
     marginBottom: 16,
   },
   label: {
-    fontSize: 14,
-    color: '#333',
-    marginBottom: 6,
-    marginTop: 10,
+    fontSize: theme.fontSizes.md,
+    color: theme.colors.text,
+    marginBottom: theme.spacing.sm,
+    marginTop: theme.spacing.sm,
+    fontFamily: theme.fonts.bold,
   },
   input: {
-    backgroundColor: '#F0F0F0',
-    borderRadius: 8,
-    padding: 10,
-    marginBottom: 5,
+    backgroundColor: theme.colors.surface,
+    borderRadius: theme.radii.md,
+    padding: theme.spacing.md,
+    marginBottom: theme.spacing.sm,
   },
   senhaContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#F0F0F0',
-    borderRadius: 8,
-    paddingHorizontal: 10,
-    marginBottom: 5,
+    backgroundColor: theme.colors.surface,
+    borderRadius: theme.radii.md,
+    paddingHorizontal: theme.spacing.md,
+    marginBottom: theme.spacing.sm,
   },
   inputSenha: {
     flex: 1,
-    paddingVertical: 10,
+    paddingVertical: theme.spacing.sm,
   },
   botao: {
-    backgroundColor: '#fff',
-    borderRadius: 8,
-    paddingVertical: 14,
+    backgroundColor: theme.colors.background,
+    borderRadius: theme.radii.md,
+    paddingVertical: theme.spacing.md,
     alignItems: 'center',
-    marginTop: 20,
+    marginTop: theme.spacing.lg,
     width: '85%',
   },
   textoBotao: {
-    color: '#00A9F4',
-    fontSize: 16,
-    fontWeight: 'bold',
+    color: theme.colors.primary,
+    fontSize: theme.fontSizes.lg,
+    fontFamily: theme.fonts.bold,
   },
   linkCadastro: {
     marginTop: 18,
@@ -164,7 +166,7 @@ const styles = StyleSheet.create({
   },
   textoLinkCadastro: {
     color: '#fff',
-    fontSize: 15,
+    fontSize: theme.fontSizes.md,
     textDecorationLine: 'underline',
   },
 });
