@@ -56,7 +56,10 @@ const config = {
 
     extra: {
       router: {},
-      API_URL: process.env.API_URL,
+        API_URL: process.env.API_URL,
+        GOOGLE_MAPS_API_KEY: process.env.GOOGLE_MAPS_API_KEY,
+      SUPABASE_URL: process.env.EXPO_PUBLIC_SUPABASE_URL,
+      SUPABASE_ANON_KEY: process.env.EXPO_PUBLIC_SUPABASE_KEY,
       "eas": {
         "projectId": "a2f0dede-4448-4e57-a411-4e687f043229"
       }
