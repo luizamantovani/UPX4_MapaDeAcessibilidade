@@ -230,6 +230,10 @@ export default function Page() {
           pin={selectedPin}
           visible={detailsModalVisible}
           onClose={() => setDetailsModalVisible(false)}
+          onDelete={() => {
+            // Recarrega os pins após exclusão
+            fetchPins().then(setPins).catch(console.error);
+          }}
         />
         <SettingsModal
           visible={settingsModalVisible}

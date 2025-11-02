@@ -91,7 +91,7 @@ export default function RegisterScreen() {
   if (!fontsLoaded) return null;
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
+    <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
       {/* Logo */}
       <Image source={MyWayLogo} style={styles.logo} />
       
@@ -163,11 +163,11 @@ const styles = StyleSheet.create({
     paddingVertical: theme.spacing.lg,
   },
   logo: {
-    width: 600, 
-    height: 600, 
+    width: 140,
+    height: 140,
     resizeMode: 'contain',
-    marginBottom: -170, 
-    marginTop: -170,
+    marginBottom: 8,
+    marginTop: 8,
   },
   card: {
     backgroundColor: theme.colors.background,

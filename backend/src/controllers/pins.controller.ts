@@ -69,11 +69,29 @@ export async function update(req: Request, res: Response) {
 export async function remove(req: Request, res: Response) {
   const id = Number(req.params.id);            // Extrai o ID da URL
 
+  // Tenta obter o pin para checar autorização
+  const pin = await service.getById(id);
+  pino.info({req: {method: req.method, url: req.url}, result: pin}, "Retrieved pin for removal");
+  if (!pin) {
+    return res.status(404).json({ message: "Pin not found" }); // Retorna 404 se não encontrar
+  }
+
+  // Obter userId da sessão/cliente. Como não há middleware de autenticação,
+  // aceitamos o userId vindo no header 'x-user-id' ou no body (campo userId).
+  const sessionUserId = (req.header("x-user-id") as string) ?? (req.body?.userId as string) ?? null;
+
+  // Permitir remover apenas se o pin for anônimo (userId === null)
+  // ou se pertencer ao mesmo usuário da sessão
+  if (pin.userId !== null && String(pin.userId) !== String(sessionUserId)) {
+    pino.warn({req: {method: req.method, url: req.url}, pinUserId: pin.userId, sessionUserId}, "Forbidden removal attempt");
+    return res.status(403).json({ message: "Forbidden: you cannot remove this pin" });
+  }
+
   const wasRemoved = await service.remove(id); // Remove o pin do banco
 
   pino.info({req: {method: req.method, url: req.url}, result: wasRemoved}, "Removed pin"); // Loga a operação
   if (!wasRemoved) {
-    return res.status(404).json({ message: "Pin not found" }); // Retorna 404 se não encontrar
+    return res.status(500).json({ message: "Failed to remove pin" }); // Erro genérico caso não tenha removido
   }
   res.status(200).send();                      // Retorna status 200 se remover com sucesso
 }

@@ -6,4 +6,5 @@ export type Pin = {
   latitude: number;
   longitude: number;
   imageUrl?: string | null;
+  userId?: string | null;
 };

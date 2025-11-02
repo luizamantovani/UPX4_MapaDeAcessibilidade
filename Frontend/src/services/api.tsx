@@ -19,3 +19,18 @@ export async function savePin(pin: Omit<Pin, "id">): Promise<Pin[]> {
   const pinsResponse = await fetch(`${API_URL}/pins`);
   return pinsResponse.json();
 }
+
+export async function deletePin(id: number | string, sessionUserId?: string | null): Promise<void> {
+  const headers: Record<string, string> = {};
+  if (sessionUserId) headers["x-user-id"] = String(sessionUserId);
+
+  const response = await fetch(`${API_URL}/pins/${id}`, {
+    method: "DELETE",
+    headers,
+  });
+
+  if (!response.ok) {
+    const text = await response.text().catch(() => null);
+    throw new Error(`Erro ao excluir pin: ${response.status} ${response.statusText} ${text || ""}`);
+  }
+}
