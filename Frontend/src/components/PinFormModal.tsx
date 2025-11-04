@@ -68,11 +68,6 @@ const PinFormModal: React.FC<PinFormModalProps> = ({ visible, onClose, onSaved, 
 
   const handleAlertClose = () => {
     setAlertVisible(false);
-    // Se for sucesso, resetar o form e fechar o modal pai
-    if (alertType === 'success') {
-      if (formCtx && formCtx.resetForm) formCtx.resetForm();
-      onClose();
-    }
   };
 
   const handleSave = () => {
@@ -117,11 +112,15 @@ const PinFormModal: React.FC<PinFormModalProps> = ({ visible, onClose, onSaved, 
     try {
   console.debug('Saving pin payload:', payload);
   const pinsFromServer = await savePin(payload as any);
-  onSaved(pinsFromServer);
-  showAlert('Sucesso', 'Ponto de acessibilidade salvo!', 'success');
+    onSaved(pinsFromServer);
+    // Após salvar com sucesso, resetamos o formulário e fechamos o modal
+    if (formCtx && formCtx.resetForm) formCtx.resetForm();
+    onClose();
     } catch (err) {
       console.error('Erro ao salvar pin:', err);
-      showAlert('Erro', 'Não foi possível salvar o ponto. Tente novamente.', 'error');
+        // Mostra alerta de erro
+        const msg = err instanceof Error ? err.message : String(err);
+        showAlert('Erro', msg || 'Não foi possível salvar o ponto. Tente novamente.', 'error');
     }
   })();
   };
@@ -221,13 +220,13 @@ const PinFormModal: React.FC<PinFormModalProps> = ({ visible, onClose, onSaved, 
           </TouchableOpacity>
         </View>
       </View>
-      <AlertBox
-        visible={alertVisible}
-        title={alertTitle}
-        message={alertMessage}
-        type={alertType}
-        onClose={handleAlertClose}
-      />
+        <AlertBox
+          visible={alertVisible}
+          title={alertTitle}
+          message={alertMessage}
+          type={alertType}
+          onClose={handleAlertClose}
+        />
     </Modal>
   );
 };

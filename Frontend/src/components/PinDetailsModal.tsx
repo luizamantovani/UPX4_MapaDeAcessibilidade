@@ -129,11 +129,8 @@ export default function PinDetailsModal({ pin, visible, onClose, onDelete }: Pro
                       try {
                         await deletePin(pin.id, currentUserId);
                         setConfirmVisible(false);
-                        setAlertTitle('Sucesso');
-                        setAlertMessage('Ponto excluído com sucesso.');
-                        setAlertType('success');
-                        setAlertVisible(true);
-                        if (onDelete) onDelete();
+                        if (onDelete) await onDelete();
+                        // Fecha o modal imediatamente após exclusão bem-sucedida
                         onClose();
                       } catch (err) {
                         console.error('Erro ao excluir pin:', err);
